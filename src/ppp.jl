@@ -3,7 +3,7 @@ to = TimerOutput()
 Random.seed!(1234) # set RNG
 
 ################ Generate or read data
-function ppp(observations; T = 1.0, n = 1, λ = nothing, λmax = NaN)
+function ppp(observations; title = "Poisson process", T = 1.0, n = 1, λ = nothing, λmax = NaN)
 
     emp_bayes = false
     sorted = false  # if the observations are sorted, the bin counts can be computed faster by setting this to true
@@ -75,7 +75,7 @@ function ppp(observations; T = 1.0, n = 1, λ = nothing, λmax = NaN)
     round(mean(acc);digits=3),"\n")
 
     facc = open("./info.txt","w")
-    write(facc, "data: ", string(data_choice),"\n")
+    write(facc, "data: ", string(title),"\n")
     write(facc, "Average acceptance probability equals: ",string(round(mean(acc);digits=3)),"\n")
     write(facc, "[T, n,  N] = ",string([T, n, N]),"\n")
     write(facc, "total number of events ",string(sum(H)),"\n")

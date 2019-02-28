@@ -1,13 +1,13 @@
 module PointProcessInference
 using DataFrames
 using Distributions
-using Optim
+#using Optim
 using Random
 using DelimitedFiles
 using SpecialFunctions
 using RCall
-#using DataFrames
-#using TimerOutputs
+using DataFrames
+using TimerOutputs
 
 include("funs-ig.jl")
 include("ppp.jl")
