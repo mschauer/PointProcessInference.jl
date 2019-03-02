@@ -1,7 +1,8 @@
 module PointProcessInference
+
 using DataFrames
 using Distributions
-#using Optim
+using Optim
 using Random
 using DelimitedFiles
 using SpecialFunctions
@@ -10,7 +11,7 @@ using DataFrames
 using TimerOutputs
 
 include("funs-ig.jl")
-include("ppp.jl")
 include("process-output-simple.jl")
+include("ppp.jl")
 
 end # module

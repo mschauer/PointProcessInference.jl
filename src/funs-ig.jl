@@ -18,7 +18,7 @@ function samplepoisson(λ::Function, λmax, T, args...)
     tt
 end
 
-λn = function(x::Float64,n::Int64)
+function λn(x::Float64, n::Int64)
     n*λ(x)
 end
 
@@ -38,12 +38,12 @@ Count how many points fall between the grid points in `grid`.
 ```
 """
 function counts(xx, grid)
-      c = zeros(Int, length(grid) + 1)
-      for x in xx
-          c[first(searchsorted(grid, x))] += 1
-      end
-      c[2:length(grid)]
-  end
+    c = zeros(Int, length(grid) + 1)
+    for x in xx
+        c[first(searchsorted(grid, x))] += 1
+    end
+    c[2:length(grid)]
+end
 
 
 function counts_sorted(xx, grid)
@@ -54,7 +54,7 @@ function counts_sorted(xx, grid)
         while i <= n && x > grid[i]
             i += 1
         end
-    c[i] += 1
+        c[i] += 1
     end
     c[2:length(grid)]
  end
@@ -76,14 +76,16 @@ Arguments:
 - α1::Float64          (shape parameter of Gamma prior on ψ[1])
 - β1::Float64          (rate parameter of Gamma prior on ψ[1])
 """
-function updateψ(H::Array{Int64}, Δ::Array{Float64},n::Int64,  ζ::Array{Float64},αψ::Float64,αζ::Float64,α1::Float64, β1::Float64 )
-    N=length(H)
+function updateψ(H::Array{Int64}, Δ::Array{Float64}, n::Int64, ζ::Array{Float64},
+    αψ::Float64, αζ::Float64, α1::Float64, β1::Float64
+)
+    N = length(H)
     ψ = zeros(N)
-    ψ[1] = rand(Gamma( α1+αζ +H[1], 1.0/( β1+αζ/ζ[2] + n*Δ[1])))
+    ψ[1] = rand(Gamma(α1 + αζ + H[1], 1.0/(β1 + αζ/ζ[2] + n*Δ[1])))
     for k in 2:(N-1)
-      ψ[k] = rand(Gamma(αψ+αζ +H[k],1.0/(αψ/ζ[k] +αζ/ζ[k+1] + n*Δ[k])))
+        ψ[k] = rand(Gamma(αψ + αζ + H[k], 1.0/(αψ/ζ[k] + αζ/ζ[k+1] + n*Δ[k])))
     end
-    ψ[N] = rand(Gamma(αψ+H[N],1.0/(αψ/ζ[N] + n*Δ[N])))
+    ψ[N] = rand(Gamma(αψ + H[N], 1.0/(αψ/ζ[N] + n*Δ[N])))
     ψ
 end
 
@@ -97,11 +99,11 @@ Arguments:
 - αψ::Float64
 - αζ::Float64
 """
-function updateζ(ψ::Array{Float64},αψ::Float64,αζ::Float64)
-    N=length(ψ)
-    ζ=zeros(N)
+function updateζ(ψ::Array{Float64}, αψ::Float64, αζ::Float64)
+    N = length(ψ)
+    ζ = zeros(N)
     for k in 2:N
-      ζ[k]=rand(InverseGamma(αψ+αζ, αζ*ψ[k-1] + αψ*ψ[k]))
+        ζ[k] = rand(InverseGamma(αψ + αζ, αζ*ψ[k-1] + αψ*ψ[k]))
     end
     ζ
 end
@@ -110,7 +112,7 @@ end
 """
     sumψζ
 
-helper function for updating α
+Helper function for updating α
 
 Computes
 ```math
@@ -123,79 +125,76 @@ Arguments:
 """
 function sumψζ(ψ::Array{Float64},ζ::Array{Float64})
     res = 0.0
-    for k =2:length(ψ)
-      res += log(ψ[k-1])+log(ψ[k])-2*log(ζ[k]) -(ψ[k-1]+ψ[k])/ζ[k]
+    for k in 2:length(ψ)
+        res += log(ψ[k-1]) + log(ψ[k]) - 2*log(ζ[k]) - (ψ[k-1] + ψ[k])/ζ[k]
     end
     res
 end
 
-function log_q(α::Float64,  N::Int64,sumval::Float64)
-      2*(N-1)*(α*log(α) -lgamma(α)) + α*sumval
+function log_q(α::Float64, N::Int64, sumval::Float64)
+    2*(N - 1)*(α*log(α) - lgamma(α)) + α*sumval
 end
 
-function log_qtilde(lα::Float64,  N::Int64,sumval::Float64, Π)
-    log_q(exp(lα),N,sumval) + lα + logpdf(Π,exp(lα))
+function log_qtilde(lα::Float64, N::Int64, sumval::Float64, Π)
+    log_q(exp(lα), N, sumval) + lα + logpdf(Π, exp(lα))
 end
 
 # given ψ and ζ, draw α using symmetric random walk on log(α)
-function updateα(α::Float64, ψ::Array{Float64},ζ::Array{Float64}, τ::Float64, Π)
+function updateα(α::Float64, ψ::Array{Float64}, ζ::Array{Float64}, τ::Float64, Π)
     sumval = sumψζ(ψ, ζ)
-    #println(sumval)
     N = length(ψ)
     lα = log(α)
-    ll = log_qtilde(lα, N, sumval,Π)
+    ll = log_qtilde(lα, N, sumval, Π)
     lα_prop = lα + τ * randn()
-    #println(lα_prop)
     ll_prop = log_qtilde(lα_prop, N, sumval, Π)
-    #println(ll_prop-ll)
-    if log(rand())< (ll_prop-ll)
-       return(exp(lα_prop), 1)
+    if log(rand()) < (ll_prop - ll)
+        return exp(lα_prop), true
     else
-      return(α,0)
+        return α, false
     end
 end
 
 # compute marginal likelihood for N=2..Nmax, here Nmax should be >=2
 function marginal_loglikelihood(Nmax::Int64, observations::Vector{Float64},
                        T::Float64, n::Int64, αind::Float64, βind::Float64)
-  mll = zeros(Nmax-1)
-  for N=2:Nmax
-    breaks = range(0,stop=T,length=N+1)# linspace(0,T,N+1)
-    Δ = diff(breaks)
-    H = counts(observations, breaks)
-    ltip = lgamma.(αind .+ H) .- (αind .+ H) .* log.(n*Δ .+ βind)  # ltip = log terms in product
-    mll[N-1] = T * n + αind * N * log(βind) -N *lgamma(αind) + sum(ltip)
-  end
-  2:Nmax, mll
+    mll = zeros(Nmax-1)
+    for N in 2:Nmax
+        breaks = range(0, stop=T, length=N+1)
+        Δ = diff(breaks)
+        H = counts(observations, breaks)
+        ltip = lgamma.(αind .+ H) .- (αind .+ H) .* log.(n*Δ .+ βind) # ltip = log terms in product
+        mll[N-1] = T*n + αind*N*log(βind) - N*lgamma(αind) + sum(ltip)
+    end
+    2:Nmax, mll
 end
 
 function elpd_DIC(Nmax::Int64, observations::Vector{Float64},
-  T::Float64, n::Int64, αind::Float64, βind::Float64)
+        T::Float64, n::Int64, αind::Float64, βind::Float64)
     elpd = Vector{Float64}(Nmax-1)
-    for N=2:Nmax
-      breaks = range(0,stop=T,length=N+1)# linspace(0,T,N+1)
-      Δ = diff(breaks)
-      H = counts(observations, breaks)
-      tip = (αind + H)./(n*Δ+βind)  # tip = terms in product
-      ll = sum(H.*log.(tip) - n*Δ .* tip)
-      νDIC = 2 * sum(H.*(log.(αind + H) -digamma.(αind + H)) )
-      elpd[N-1] = ll - νDIC
+    for N in 2:Nmax
+        breaks = range(0, stop=T, length=N+1)
+        Δ = diff(breaks)
+        H = counts(observations, breaks)
+        tip = (αind + H)./(n*Δ + βind)  # tip = terms in product
+        ll = sum(H.*log.(tip) - n*Δ .* tip)
+        νDIC = 2 * sum(H.*(log.(αind + H) - digamma.(αind + H)) )
+        elpd[N-1] = ll - νDIC
     end
-  2:Nmax, elpd
+    2:Nmax, elpd
 end
 
 # Determine N as the largest N for which each bin has at least Nmin observations
-function determine_number_breaks(Nmin::Int64,T::Float64,observations::Vector{Float64})
+function determine_number_breaks(Nmin::Int64, T::Float64, observations::Vector{Float64})
     too_many = true
     N = 1
     while too_many
-        breaks = range(0,stop=T,length=N+1)#linspace(0,T,N+1) # determine breaks points with N bins
+        breaks = range(0, stop=T, length=N+1) # determine breaks points with N bins
         H = counts(observations, breaks)  # compute counts over bins
         if minimum(H) >= Nmin
-          N += 1 # we may be able to use more bins
+            N += 1 # we may be able to use more bins
         else
-          too_many = false         # each bin contains at least Nmin observations
-          return(N-1)
+            too_many = false # each bin contains at least Nmin observations
+            return N - 1
         end
     end
 end
@@ -203,9 +202,9 @@ end
 """
     ebβ
 
-Determine β by maximising the marginal likelihood, for fixed α and N
+Determine β by maximising the marginal likelihood, for fixed α and N.
 """
-ebβ  = function(α,  H, Δ, n, N)
+function ebβ(α,  H, Δ, n, N)
     GG(α, H, Δ, n, N) = (lβ) -> -α*N*lβ[1] + N * lgamma(α) -  sum(lgamma.(α+H)) + sum((α+H).* log.(n*Δ+exp(lβ[1])))
     result = optimize(GG(α, H, Δ, n, N), [0.0], BFGS())
     exp.(result.minimizer)[1]
@@ -214,10 +213,9 @@ end
 """
     ebα
 
-Determine α by maximising the marginal likelihood, for fixed β and N
-
+Determine α by maximising the marginal likelihood, for fixed β and N.
 """
-ebα = function(β,  H, Δ, n, N)
+function ebα(β,  H, Δ, n, N)
     GG(β, H, Δ, n, N) = (lα) -> -exp(lα[1])*N* log(β) + N * lgamma(exp(lα[1])) -  sum(lgamma.(exp(lα[1])+H)) + sum((exp(lα[1])+H).* log.(n*Δ+β))
     result = optimize(GG(β, H, Δ, n, N), [0.0], BFGS())
     exp.(result.minimizer)[1]
