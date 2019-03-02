@@ -141,5 +141,5 @@ function loadexample(data_choice)
     else
         throw(ArgumentError("Invalid `data_choice.`"))
     end
-    return observations, (T = T, n = n), (λ = λ, λmax = λmax)
+    return observations, (title=data_choice, T = T, n = n), (λ = λ, λmax = λmax)
 end

@@ -3,7 +3,7 @@ to = TimerOutput()
 Random.seed!(1234) # set RNG
 
 ################ Generate or read data
-function ppp(observations;
+function inference(observations;
     title = "Poisson process", # optional caption for mcmc run
     summaryfile = nothing, # path to summaryfile or nothing
     T = maximum(observations), # total time
@@ -14,7 +14,8 @@ function ppp(observations;
     Π = Exponential(10), # prior on alpha
     τ = 0.7, # Set scale for random walk update on log(α)
     αind = 0.1, βind = 0.1, # parameters for the independence prior
-    emp_bayes = false # estimate βind using empirical Bayes
+    emp_bayes = false, # estimate βind using empirical Bayes
+    verbose = true
 )
 
 
@@ -69,12 +70,14 @@ function ppp(observations;
         @timeit to "update α"  α[i+1], acc[i] = updateα(α[i], ψ[i + 1,:], ζ[i,:], τ,  Π)
     end
 
-    println("Timing mcmc steps:")
-    show(to, allocations = false, compact = true)
+    if verbose
+        println("Timing mcmc steps:")
+        show(to, allocations = false, compact = true)
 
-    println("")
-    println("Average acceptance probability for updating  equals: ",
-    round(mean(acc);digits=3),"\n")
+        println("")
+        println("Average acceptance probability for updating  equals: ",
+        round(mean(acc);digits=3),"\n")
+    end
 
     if summaryfile != nothing
         facc = open(summaryfile,"w")
@@ -93,5 +96,5 @@ function ppp(observations;
         close(facc)
     end
 
-    return (ψ = ψ , acc = acc)
+    return (title=title, observations = observations, ψ = ψ, N = N, breaks = breaks, acc = acc)
 end

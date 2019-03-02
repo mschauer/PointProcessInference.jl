@@ -1,4 +1,6 @@
 using Test
 using PointProcessInference
 
-PointProcessInference.loadexample("coal")
+observations, parameters, extra = PointProcessInference.loadexample("coal")
+res = PointProcessInference.inference(observations; parameters...)
+PointProcessInference.showresults(res)

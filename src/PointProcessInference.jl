@@ -1,9 +1,8 @@
 module PointProcessInference
-
 using DataFrames
 using Distributions
 using Optim
-using Random
+using Random, Distributions, Statistics
 using DelimitedFiles
 using SpecialFunctions
 using RCall

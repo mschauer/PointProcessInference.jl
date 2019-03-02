@@ -1,5 +1,15 @@
+using DataFrames
+using Statistics
+using RCall
 
-function showresults(; ψ = ψ , acc = acc, p = .05)
+function showresults(res; p = .05)
+    observations = res.observations
+    breaks = res.breaks
+    title = res.title
+    ψ = res.ψ
+    N = res.N
+    acc = res.acc
+
     A = view(ψ, size(ψ, 1)÷2:size(ψ, 1), :)
     upper = mapslices(v-> quantile(v, 1 - p/2), A, dims=1)
     med = median(A, dims=1)
