@@ -23,11 +23,16 @@ The intensity *λ* is then modelled as
 Now we postulate that a priori the coefficients `ψ` form a Gamma Markov chain (GMC). As explained in our preprint, this prior induces smoothing across the coefficients *ψ*, and leads to conjugate posterior computations
 via the Gibbs sampler. The data-generating intensity is not assumed to be necessarily piecewise constant.
 
+## Installation
+
+```
+pkg> add https://github.com/mschauer/PointProcessInference.jl
+```
+
 ## Usage
 
 The following example loads the coal miner data set,
-performs the statistical analysis and visualizes
-the result.
+performs the statistical analysis.
 
 
 ```
@@ -39,10 +44,21 @@ Random.seed!(1234) # set RNG
 observations, parameters, λinfo = PointProcessInference.loadexample("coal")
 
 res = PointProcessInference.inference(observations; parameters...)
-
-include(joinpath(dirname(pathof(PointProcessInference)), "..", "contrib", "process-output-simple.jl"))
-
 ```
+
+The package has a script to visualize
+the result with the help of `R` and `ggplot2`.
+After installing the additional dependencies
+```
+pkg> add RCall
+pkg> add DataFrames
+```
+call
+```
+include(joinpath(dirname(pathof(PointProcessInference)), "..", "contrib", "process-output-simple.jl"))
+```
+The script reads the variable `res`.
+
 
 The main procedure has signature
 

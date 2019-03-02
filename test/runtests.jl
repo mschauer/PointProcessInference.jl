@@ -1,5 +1,6 @@
 using Test
 using PointProcessInference
+using Statistics
 
 observations, parameters, λinfo = PointProcessInference.loadexample("generated")
 res = PointProcessInference.inference(observations; parameters...)
