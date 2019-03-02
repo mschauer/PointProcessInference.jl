@@ -18,9 +18,6 @@ function samplepoisson(λ::Function, λmax, T, args...)
     tt
 end
 
-function λn(x::Float64, n::Int64)
-    n*λ(x)
-end
 
 
 """

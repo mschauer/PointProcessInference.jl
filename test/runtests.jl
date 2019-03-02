@@ -1,6 +1,6 @@
 using Test
 using PointProcessInference
 
-observations, parameters, extra = PointProcessInference.loadexample("coal")
+observations, parameters, λinfo = PointProcessInference.loadexample("generated")
 res = PointProcessInference.inference(observations; parameters...)
-PointProcessInference.showresults(res)
+#include(joinpath(dirname(pathof(PointProcessInference)), "..", "contrib", "process-output-simple.jl")

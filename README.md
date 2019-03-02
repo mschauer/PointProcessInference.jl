@@ -25,6 +25,22 @@ via the Gibbs sampler. The data-generating intensity is not assumed to be necess
 
 ## Usage
 
+The following example loads the coal miner data set,
+performs the statistical analysis and visualizes
+the result.
+
+
+```
+using PointProcessInference
+
+observations, parameters, λinfo = PointProcessInference.loadexample("coal")
+
+res = PointProcessInference.inference(observations; parameters...)
+
+include(joinpath(dirname(pathof(PointProcessInference)), "..", "contrib", "process-output-simple.jl"))
+
+```
+
 The main procedure has signature
 
 ```julia

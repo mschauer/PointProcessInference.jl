@@ -96,5 +96,5 @@ function inference(observations;
         close(facc)
     end
 
-    return (title=title, observations = observations, ψ = ψ, N = N, breaks = breaks, acc = acc)
+    return (title=title, observations = observations, ψ = ψ, N = N, T = t, breaks = breaks, acc = acc)
 end
