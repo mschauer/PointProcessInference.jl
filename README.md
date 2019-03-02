@@ -46,7 +46,7 @@ observations, parameters, λinfo = PointProcessInference.loadexample("coal")
 res = PointProcessInference.inference(observations; parameters...)
 ```
 
-The package has a script to visualize
+The package has a script `process-output-simple.jl` in the `contrib` folder to visualize
 the result with the help of `R` and `ggplot2`.
 After installing the additional dependencies
 ```
