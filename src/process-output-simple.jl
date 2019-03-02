@@ -1,5 +1,5 @@
 
-function showresults(;ψ = ψ , acc = acc, p = .05)
+function showresults(; ψ = ψ , acc = acc, p = .05)
     A = view(ψ, size(ψ, 1)÷2:size(ψ, 1), :)
     upper = mapslices(v-> quantile(v, 1 - p/2), A, dims=1)
     med = median(A, dims=1)
@@ -16,9 +16,6 @@ function showresults(;ψ = ψ , acc = acc, p = .05)
     tMarkov = DataFrame(x=breaks, average=[vec(ave); vec(ave)[end]])
 
     obs = DataFrame(x=observations)
-
-
-
 
     @rlibrary ggplot2
     p = ggplot() + geom_rect(data=dMarkov,

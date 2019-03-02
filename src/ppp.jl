@@ -11,10 +11,10 @@ function ppp(observations;
     N = min(length(observations)÷4, 50), # number of bins
     IT = 30000, # number of iterations
     α1 = 0.1, β1 = 0.1, # parameters for Gamma Markov chain
-    Π = Exponential(10) # prior on alpha
+    Π = Exponential(10), # prior on alpha
     τ = 0.7, # Set scale for random walk update on log(α)
     αind = 0.1, βind = 0.1, # parameters for the independence prior
-    emp_bayes = false, # estimate βind using empirical Bayes
+    emp_bayes = false # estimate βind using empirical Bayes
 )
 
 
