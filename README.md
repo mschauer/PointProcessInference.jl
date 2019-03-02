@@ -32,6 +32,9 @@ the result.
 
 ```
 using PointProcessInference
+using Random
+
+Random.seed!(1234) # set RNG
 
 observations, parameters, λinfo = PointProcessInference.loadexample("coal")
 

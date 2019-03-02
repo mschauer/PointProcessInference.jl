@@ -1,6 +1,3 @@
-to = TimerOutput()
-
-Random.seed!(1234) # set RNG
 
 ################ Generate or read data
 function inference(observations;
@@ -17,6 +14,10 @@ function inference(observations;
     emp_bayes = false, # estimate βind using empirical Bayes
     verbose = true
 )
+
+    to = TimerOutput()
+
+
 
 
     ################ Data processing
@@ -76,25 +77,24 @@ function inference(observations;
 
         println("")
         println("Average acceptance probability for updating  equals: ",
-        round(mean(acc);digits=3),"\n")
+            round(mean(acc); digits=3),"\n")
     end
 
     if summaryfile != nothing
-        facc = open(summaryfile,"w")
-        write(facc, "data: ", string(title),"\n")
-        write(facc, "Average acceptance probability equals: ",string(round(mean(acc);digits=3)),"\n")
-        write(facc, "[T, n,  N] = ",string([T, n, N]),"\n")
-        write(facc, "total number of events ",string(sum(H)),"\n")
-        write(facc, "tau = ",string(τ),"\n\n")
-        #write(facc, "elapsed time ",string(elapsed_time), "\n\n")
-        write(facc, "---- Prior specification ----","\n")
-        write(facc, "alpha_ind = ",string(αind),"\n")
-        write(facc, "beta_ind = ",string(βind,"\n"))
-        write(facc, "alpha1 = ",string(α1),"\n")
-        write(facc, "beta1 = ",string(β1),"\n")
-        write(facc, "Pi = ",string(Π),"\n")
+        facc = open(summaryfile, "w")
+        write(facc, "data: ", string(title), "\n")
+        write(facc, "Average acceptance probability equals: ", string(round(mean(acc); digits=3)), "\n")
+        write(facc, "[T, n, N] = ", string([T, n, N]), "\n")
+        write(facc, "total number of events ", string(sum(H)), "\n")
+        write(facc, "tau = ", string(τ),"\n\n")
+        write(facc, "---- Prior specification ----", "\n")
+        write(facc, "alpha_ind = ", string(αind), "\n")
+        write(facc, "beta_ind = ", string(βind, "\n"))
+        write(facc, "alpha1 = ", string(α1), "\n")
+        write(facc, "beta1 = ", string(β1), "\n")
+        write(facc, "Pi = ", string(Π), "\n")
         close(facc)
     end
 
-    return (title=title, observations = observations, ψ = ψ, N = N, T = t, breaks = breaks, acc = acc)
+    return (title=title, observations = observations, ψ = ψ, N = N, T = T, breaks = breaks, acc = acc)
 end

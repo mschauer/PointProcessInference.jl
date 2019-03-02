@@ -31,11 +31,11 @@ obs = DataFrame(x=observations)
 
 @rlibrary ggplot2
 p = ggplot() + geom_rect(data=dMarkov,
-aes(xmin=:xmin,xmax=:xmax,ymin = :lower, ymax = :upper), fill = "lightsteelblue1") +
-geom_step(data=tMarkov, aes(x=:x,y=:average),colour="black",size=1.3)+
-ggtitle("Markov chain prior")+
-xlab("")+ylab("")+
-geom_rug(data=obs, mapping=aes(x=:x), color="black",sides="t")
+aes(xmin = :xmin, xmax = :xmax, ymin = :lower, ymax = :upper), fill = "lightsteelblue1") +
+geom_step(data=tMarkov, aes(x=:x, y=:average),colour="black",size=1.3)+
+ggtitle("Markov chain prior") +
+xlab("") + ylab("") +
+geom_rug(data=obs, mapping=aes(x=:x), color="black", sides="t")
 
 if !ismissing(λ)
     gr = range(0,stop=T,length=1000); vals = λ.(gr)
