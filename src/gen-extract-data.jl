@@ -1,21 +1,44 @@
-function registerdatadeps()
-    register(DataDep("years_passed.csv", "", "https://www.dropbox.com/s/6zr083w4hbia4d0/years_passed.csv?dl=1"))
-    register(DataDep("coal.csv", "", "https://www.dropbox.com/s/uy6j8wru1nkqhw5/coal.csv?dl=1"))
-    register(DataDep("testdat_n1.csv", "", "https://www.dropbox.com/s/kcqe58li0pevn3g/testdat_n1.csv?dl=1"))
-    register(DataDep("testdat_n5.csv", "", "https://www.dropbox.com/s/hpcu0n4xdes2sbn/testdat_n5.csv?dl=1"))
-    register(DataDep("testdat_n4000.csv", "", "https://www.dropbox.com/s/65i1fc7bo6uk206/testdat_n4000.csv?dl=1"))
-    register(DataDep("simpson_n500.csv", "", "https://www.dropbox.com/s/88iwtx60ziwevz4/simpson_n500.csv?dl=1"))
-    register(DataDep("simpson_n200.csv", "", "https://www.dropbox.com/s/qi8h75tdzj30adc/simpson_n200.csv?dl=1"))
-    register(DataDep("android_hours.csv", "", "https://www.dropbox.com/s/psjvi58hxbvsqpo/android_hours.csv?dl=1"))
-    register(DataDep("iphone_early_hours.csv", "", "https://www.dropbox.com/s/101esqt30ty01ut/iphone_early_hours.csv?dl=1"))
-    register(DataDep("iphone_late_hours.csv", "", "https://www.dropbox.com/s/41kxtq0ojxmbuaa/iphone_late_hours.csv?dl=1"))
-    register(DataDep("", "", ""))
-    register(DataDep("unit_intensity.csv", "", "https://www.dropbox.com/s/nsbirz2o5lq0qq6/unit_intensity.csv?dl=0"))
-    register(DataDep("unit_intensity_withpeak.csv", "", "https://www.dropbox.com/s/nsbirz2o5lq0qq6/unit_intensity.csv?dl=1"))
 
+function registerdatadeps()
+    register(DataDep("years_passed", "", "https://www.dropbox.com/s/6zr083w4hbia4d0/years_passed.csv?dl=1"))
+    register(DataDep("coal", "", "https://www.dropbox.com/s/uy6j8wru1nkqhw5/coal.csv?dl=1"))
+    register(DataDep("testdat_n1", "", "https://www.dropbox.com/s/kcqe58li0pevn3g/testdat_n1.csv?dl=1"))
+    register(DataDep("testdat_n5", "", "https://www.dropbox.com/s/hpcu0n4xdes2sbn/testdat_n5.csv?dl=1"))
+    register(DataDep("testdat_n4000", "", "https://www.dropbox.com/s/65i1fc7bo6uk206/testdat_n4000.csv?dl=1"))
+    register(DataDep("simpson_n500", "", "https://www.dropbox.com/s/88iwtx60ziwevz4/simpson_n500.csv?dl=1"))
+    register(DataDep("simpson_n200", "", "https://www.dropbox.com/s/qi8h75tdzj30adc/simpson_n200.csv?dl=1"))
+    register(DataDep("android_hours", "", "https://www.dropbox.com/s/psjvi58hxbvsqpo/android_hours.csv?dl=1"))
+    register(DataDep("iphone_early_hours", "", "https://www.dropbox.com/s/101esqt30ty01ut/iphone_early_hours.csv?dl=1"))
+    register(DataDep("iphone_late_hours", "", "https://www.dropbox.com/s/41kxtq0ojxmbuaa/iphone_late_hours.csv?dl=1"))
+    register(DataDep("unit_intensity", "", "https://www.dropbox.com/s/nsbirz2o5lq0qq6/unit_intensity.csv?dl=0"))
 end
 
+"""
+loadexample(data_choice) -> observations, (T = T, n = n), λinfo
+
+Load example data for one of the examples
+
+    generated
+    mass-shooting
+    coal
+    testdat_n1
+    testdat_n5
+    testdat_n4000
+    simpson_n200
+    simpson_n500
+    unit_intensity
+    android
+    iphone_early
+    iphone_late
+    sum_android_iphone_early
+
+Returns the observation vector, and a named tuple of `T` (endtime) and `n`
+observation multiplicity and a named tuple giving additional info about the
+true density (if applicable).
+"""
 function loadexample(data_choice)
+    λ = missing
+    λmax = missing
 
     if data_choice=="generated"
         ### Option 1: simulated data, by specifying
@@ -30,13 +53,13 @@ function loadexample(data_choice)
         ### Read mass shooting data
         n = 1
         # in case we use years passed
-        yp=readdlm(datadep"years_passed.csv")
+        yp=readdlm(datadep"years_passed/years_passed.csv")
         observations = float.(yp[2:end])
         T = last(observations) + 28/365  # add 4 weeks
     elseif data_choice=="coal"
         ### Read coal mining disaster data
         n = 1
-        coal=readdlm(datadep"coal.csv")
+        coal=readdlm(datadep"coal/coal.csv")
         observations = float.(coal[2:end])
         T = last(observations)
     elseif data_choice=="testdat_n1"
