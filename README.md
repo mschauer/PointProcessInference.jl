@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mschauer/PointProcessInference.jl.svg?branch=master)](https://travis-ci.org/mschauer/PointProcessInference.jl)
+
 # PointProcessInference.jl
 Fast and scalable non-parametric Bayesian inference for Poisson point processes
 
