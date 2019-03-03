@@ -25,7 +25,7 @@ Now we postulate that a priori the coefficients *ψ* form a Gamma Markov chain (
 via the Gibbs sampler. The data-generating intensity is not assumed to be necessarily piecewise constant. Our methodology provides both a point estimate of the intensity function (posterior mean) and uncertainty quantification via marginal credible bands; see the figure below for an illustration.
 
 <img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal.png" alt="Intensity estimate for the mining data." width="67%">
-*Illustration: Intensity estimation for the UK mining disasters data (1851-1962). The data are displayed via the rug plot in the upper margin of the plot, the posterior mean is given by a solid black line, while a 95% marginal credible band is shaded in light blue.*
+*Illustration: Intensity estimation for the UK coal mining disasters data (1851-1962). The data are displayed via the rug plot in the upper margin of the plot, the posterior mean is given by a solid black line, while a 95% marginal credible band is shaded in light blue.*
 
 ## Installation
 
