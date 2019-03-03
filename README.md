@@ -18,12 +18,15 @@ scattering of points in the time interval *[0,T]*, where the way the scattering 
 An example is the ordinary Poisson process, for which the intensity *λ*  is constant.
 
 We infer the intensity function *λ* in a non-parametric fashion. The function *λ* is modelled as piecewise constant. This is even more natural, if the data have been already binned,
-as is often the case in, e.g., astronomy. Thus, fix a positive integer *N* and a grid `b` of points `b[1] == 0`, `b[N] == T` be a grid of points on the interval *[0,T]*, for instance a uniform grid.
+as is often the case in, e.g., astronomy. Thus, fix a positive integer *N* and a grid *b* of points `b[1] == 0`, `b[N] == T` be a grid of points on the interval *[0,T]*, for instance a uniform grid.
 The intensity *λ* is then modelled as
 `λ(x) = ψ[k]` for `b[k] <= x < b[k+1]`.
 
-Now we postulate that a priori the coefficients `ψ` form a Gamma Markov chain (GMC). As explained in our preprint, this prior induces smoothing across the coefficients *ψ*, and leads to conjugate posterior computations
+Now we postulate that a priori the coefficients *ψ* form a Gamma Markov chain (GMC). As explained in our preprint, this prior induces smoothing across the coefficients *ψ*, and leads to conjugate posterior computations
 via the Gibbs sampler. The data-generating intensity is not assumed to be necessarily piecewise constant.
+
+<img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal.png" alt="Intensity estimate for the mining data." width="67%">
+*Illustration: Intensity estimate for the mining data. Data display as dot plot at the upper margin.*
 
 ## Installation
 
@@ -47,6 +50,8 @@ observations, parameters, λinfo = PointProcessInference.loadexample("coal")
 
 res = PointProcessInference.inference(observations; parameters...)
 ```
+
+## High-quality plots
 
 The package has a script `process-output-simple.jl` in the `contrib` folder to visualize
 the result with the help of `R` and `ggplot2`.
