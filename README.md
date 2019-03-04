@@ -29,6 +29,8 @@ via the Gibbs sampler. The data-generating intensity is not assumed to be necess
 
 ## Installation
 
+Change julia into the package manager mode by hitting `]`. Then run the command `add https://github.com/mschauer/PointProcessInference.jl`.
+
 ```
 pkg> add https://github.com/mschauer/PointProcessInference.jl
 ```
@@ -50,6 +52,15 @@ observations, parameters, λinfo = PointProcessInference.loadexample("coal")
 res = PointProcessInference.inference(observations; parameters...)
 ```
 
+The main procedure has signature
+
+```julia
+ppinference(observations; title = "Poisson process", T = 1.0, n = 1, ...)
+```
+
+where `observations` is the sorted vector of Poisson event times, `T` is the endpoint of the time interval considered, and if
+`observations` is an aggregate of `n` different independent observations (say aggregated for `n` days), this can be indicated by the parameter `n > 1`.
+
 ## High-quality plots
 
 For high quality plotting, the package has a script `process-output-simple.jl` in the `contrib` folder that visualizes
@@ -66,11 +77,3 @@ include(joinpath(dirname(pathof(PointProcessInference)), "..", "contrib", "proce
 The script reads the variable `res`.
 
 
-The main procedure has signature
-
-```julia
-ppinference(observations; title = "Poisson process", T = 1.0, n = 1, ...)
-```
-
-where `observations` is the sorted vector of Poisson event times, `T` is the endpoint of the time interval considered, and if
-`observations` is an aggregate of `n` different independent observations (say aggregated for `n` days), this can be indicated by the parameter `n > 1`.
