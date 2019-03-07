@@ -1,9 +1,10 @@
 
 ################ Generate or read data
-function inference(observations;
+function inference(observations_;
     title = "Poisson process", # optional caption for mcmc run
     summaryfile = nothing, # path to summaryfile or nothing
-    T = maximum(observations), # total time
+    T0 = 0.0, # start time
+    T = maximum(observations), # end time
     n = 1, # number of aggregated samples in `observations`
     N = min(length(observations)÷4, 50), # number of bins
     IT = 30000, # number of iterations
@@ -15,8 +16,13 @@ function inference(observations;
     verbose = true
 )
 
-    to = TimerOutput()
 
+    if T0 == 0
+        observations = observations_
+    else
+        T -= T0
+        observations = observations_ - T0
+    end
 
 
 
@@ -64,37 +70,35 @@ function inference(observations;
     end
 
     # Gibbs sampler
-    for i in 1:(IT-1)
+    tt = @elapsed for i in 1:(IT-1)
         αψ = αζ = α[i]
-        @timeit to "update ζ"  ζ[i,:] = updateζ(ψ[i,:], αψ, αζ)
-        @timeit to "update ψ"  ψ[i+1,:] = updateψ(H, Δ, n, ζ[i,:], αψ, αζ, α1, β1)
-        @timeit to "update α"  α[i+1], acc[i] = updateα(α[i], ψ[i + 1,:], ζ[i,:], τ,  Π)
+        ζ[i,:] = updateζ(ψ[i,:], αψ, αζ)
+        ψ[i+1,:] = updateψ(H, Δ, n, ζ[i,:], αψ, αζ, α1, β1)
+        α[i+1], acc[i] = updateα(α[i], ψ[i + 1,:], ζ[i,:], τ,  Π)
     end
 
     if verbose
-        println("Timing mcmc steps:")
-        show(to, allocations = false, compact = true)
-
+        println("Running time: $tt")
         println("")
-        println("Average acceptance probability for updating  equals: ",
+        println("Average acceptance probability for updating: ",
             round(mean(acc); digits=3),"\n")
     end
 
     if summaryfile != nothing
         facc = open(summaryfile, "w")
-        write(facc, "data: ", string(title), "\n")
-        write(facc, "Average acceptance probability equals: ", string(round(mean(acc); digits=3)), "\n")
-        write(facc, "[T, n, N] = ", string([T, n, N]), "\n")
-        write(facc, "total number of events ", string(sum(H)), "\n")
+        write(facc, "Data: ", string(title), "\n")
+        write(facc, "Average acceptance probability: ", string(round(mean(acc); digits=3)), "\n")
+        write(facc, "[T0, T, n, N] = ", string([T0, T, n, N]), "\n")
+        write(facc, "Total number of events: ", string(sum(H)), "\n")
         write(facc, "tau = ", string(τ),"\n\n")
-        write(facc, "---- Prior specification ----", "\n")
-        write(facc, "alpha_ind = ", string(αind), "\n")
-        write(facc, "beta_ind = ", string(βind, "\n"))
-        write(facc, "alpha1 = ", string(α1), "\n")
-        write(facc, "beta1 = ", string(β1), "\n")
-        write(facc, "Pi = ", string(Π), "\n")
+        write(facc, "Prior specification:", "\n")
+        write(facc, "\talpha_ind = ", string(αind), "\n")
+        write(facc, "\tbeta_ind = ", string(βind, "\n"))
+        write(facc, "\talpha1 = ", string(α1), "\n")
+        write(facc, "\tbeta1 = ", string(β1), "\n")
+        write(facc, "\tPi = ", string(Π), "\n")
         close(facc)
     end
 
-    return (title=title, observations = observations, ψ = ψ, N = N, T = T, breaks = breaks, acc = acc)
+    return (title=title, observations = observations_, ψ = ψ, N = N, T0=T0, T = T + T0, breaks = breaks + T0, acc = acc)
 end

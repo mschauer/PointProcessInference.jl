@@ -5,7 +5,6 @@ using Optim
 using Random, Statistics
 using DelimitedFiles
 using SpecialFunctions
-using TimerOutputs
 using DataDeps
 
 include("funs-ig.jl")
