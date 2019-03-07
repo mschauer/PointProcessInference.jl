@@ -71,7 +71,7 @@ function inference(observations;
     end
 
     if verbose
-        println("Running time: $(round(tt, 2)) s")
+        println("Running time: $(round(tt, digits=2)) s")
         println("")
         println("Average acceptance probability for updating: ",
             round(mean(acc); digits=3),"\n")
