@@ -16,8 +16,6 @@ end
 
 include("ppp.jl")
 
-macro ggplot2()
-    :(include(joinpath(dirname(pathof(PointProcessInference)), "..", "contrib", "process-output-simple.jl")))
-end
+plotscript() = joinpath(dirname(pathof(PointProcessInference)), "..", "contrib", "process-output-simple.jl")
 
 end # module
