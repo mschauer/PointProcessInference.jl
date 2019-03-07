@@ -1,13 +1,13 @@
 """
-   samplepoisson
+   samplepoisson(λ::Function, λmax, t_, T, args...)
 
-Sample a non homogeneous Poisson process on [0,T] via thinning.
+Sample a non homogeneous Poisson process on [t,T] via thinning.
 λ is the intensity;
-λmax is an upper bound for λ(x), when x in [0,T].
+λmax is an upper bound for λ(x), when x in [t,T].
 args contains additional arguments passed to the function λ
 """
-function samplepoisson(λ::Function, λmax, T, args...)
-    t = 0.0
+function samplepoisson(λ::Function, λmax, t_, T, args...)
+    t = t_
     tt = zeros(0)
     while t <= T
         t = t - log(rand())/λmax
@@ -65,16 +65,16 @@ Sample from the distribution of ψ, conditional on ζ, αψ and αζ.
 
 Arguments:
 - H::Array{Int64}      (count of events over bins)
-- Δ::Array{Float64}    (lengths of bins)
-- n::Int64             (sample size)
-- ζ::Array{Float64}
-- αψ::Float64
-- αζ::Float64
-- α1::Float64          (shape parameter of Gamma prior on ψ[1])
-- β1::Float64          (rate parameter of Gamma prior on ψ[1])
+- Δ::AbstractArray    (lengths of bins)
+- n::Integer             (sample size)
+- ζ::AbstractArray
+- αψ
+- αζ
+- α1          (shape parameter of Gamma prior on ψ[1])
+- β1          (rate parameter of Gamma prior on ψ[1])
 """
-function updateψ(H::Array{Int64}, Δ::Array{Float64}, n::Int64, ζ::Array{Float64},
-    αψ::Float64, αζ::Float64, α1::Float64, β1::Float64
+function updateψ(H::Array{Int64}, Δ::AbstractArray, n::Integer, ζ::AbstractArray,
+    αψ, αζ, α1, β1
 )
     N = length(H)
     ψ = zeros(N)
@@ -92,11 +92,11 @@ end
 Sample from the distribution of ζ, conditional on ψ, αψ and αζ.
 
 Arguments:
-- ψ::Array{Float64}
-- αψ::Float64
-- αζ::Float64
+- ψ::AbstractArray
+- αψ
+- αζ
 """
-function updateζ(ψ::Array{Float64}, αψ::Float64, αζ::Float64)
+function updateζ(ψ::AbstractArray, αψ, αζ)
     N = length(ψ)
     ζ = zeros(N)
     for k in 2:N
@@ -117,10 +117,10 @@ Computes
 ```
 
 Arguments:
-- ψ::Array{Float64}
-- ζ::Array{Float64}
+- ψ::AbstractArray
+- ζ::AbstractArray
 """
-function sumψζ(ψ::Array{Float64},ζ::Array{Float64})
+function sumψζ(ψ::AbstractArray, ζ::AbstractArray)
     res = 0.0
     for k in 2:length(ψ)
         res += log(ψ[k-1]) + log(ψ[k]) - 2*log(ζ[k]) - (ψ[k-1] + ψ[k])/ζ[k]
@@ -128,16 +128,16 @@ function sumψζ(ψ::Array{Float64},ζ::Array{Float64})
     res
 end
 
-function log_q(α::Float64, N::Int64, sumval::Float64)
+function log_q(α, N::Integer, sumval)
     2*(N - 1)*(α*log(α) - lgamma(α)) + α*sumval
 end
 
-function log_qtilde(lα::Float64, N::Int64, sumval::Float64, Π)
+function log_qtilde(lα, N::Integer, sumval, Π)
     log_q(exp(lα), N, sumval) + lα + logpdf(Π, exp(lα))
 end
 
 # given ψ and ζ, draw α using symmetric random walk on log(α)
-function updateα(α::Float64, ψ::Array{Float64}, ζ::Array{Float64}, τ::Float64, Π)
+function updateα(α, ψ::AbstractArray, ζ::AbstractArray, τ, Π)
     sumval = sumψζ(ψ, ζ)
     N = length(ψ)
     lα = log(α)
@@ -152,24 +152,24 @@ function updateα(α::Float64, ψ::Array{Float64}, ζ::Array{Float64}, τ::Float
 end
 
 # compute marginal likelihood for N=2..Nmax, here Nmax should be >=2
-function marginal_loglikelihood(Nmax::Int64, observations::Vector{Float64},
-                       T::Float64, n::Int64, αind::Float64, βind::Float64)
+function marginal_loglikelihood(Nmax::Integer, observations::AbstractVector,
+                       T0, T, n::Integer, αind, βind)
     mll = zeros(Nmax-1)
     for N in 2:Nmax
-        breaks = range(0, stop=T, length=N+1)
+        breaks = range(T0, stop=T, length=N+1)
         Δ = diff(breaks)
         H = counts(observations, breaks)
         ltip = lgamma.(αind .+ H) .- (αind .+ H) .* log.(n*Δ .+ βind) # ltip = log terms in product
-        mll[N-1] = T*n + αind*N*log(βind) - N*lgamma(αind) + sum(ltip)
+        mll[N-1] = (T-T0)*n + αind*N*log(βind) - N*lgamma(αind) + sum(ltip)
     end
     2:Nmax, mll
 end
 
-function elpd_DIC(Nmax::Int64, observations::Vector{Float64},
-        T::Float64, n::Int64, αind::Float64, βind::Float64)
+function elpd_DIC(Nmax::Integer, observations::AbstractVector,
+        T0, T, n::Integer, αind, βind)
     elpd = Vector{Float64}(Nmax-1)
     for N in 2:Nmax
-        breaks = range(0, stop=T, length=N+1)
+        breaks = range(T0, stop=T, length=N+1)
         Δ = diff(breaks)
         H = counts(observations, breaks)
         tip = (αind + H)./(n*Δ + βind)  # tip = terms in product
@@ -181,11 +181,11 @@ function elpd_DIC(Nmax::Int64, observations::Vector{Float64},
 end
 
 # Determine N as the largest N for which each bin has at least Nmin observations
-function determine_number_breaks(Nmin::Int64, T::Float64, observations::Vector{Float64})
+function determine_number_breaks(Nmin::Integer, T0, T, observations::AbstractVector)
     too_many = true
     N = 1
     while too_many
-        breaks = range(0, stop=T, length=N+1) # determine breaks points with N bins
+        breaks = range(T0, stop=T, length=N+1) # determine breaks points with N bins
         H = counts(observations, breaks)  # compute counts over bins
         if minimum(H) >= Nmin
             N += 1 # we may be able to use more bins
@@ -201,7 +201,7 @@ end
 
 Determine β by maximising the marginal likelihood, for fixed α and N.
 """
-function ebβ(α,  H, Δ, n, N)
+function ebβ(α, H, Δ, n, N)
     GG(α, H, Δ, n, N) = (lβ) -> -α*N*lβ[1] + N * lgamma(α) -  sum(lgamma.(α+H)) + sum((α+H).* log.(n*Δ+exp(lβ[1])))
     result = optimize(GG(α, H, Δ, n, N), [0.0], BFGS())
     exp.(result.minimizer)[1]
@@ -212,7 +212,7 @@ end
 
 Determine α by maximising the marginal likelihood, for fixed β and N.
 """
-function ebα(β,  H, Δ, n, N)
+function ebα(β, H, Δ, n, N)
     GG(β, H, Δ, n, N) = (lα) -> -exp(lα[1])*N* log(β) + N * lgamma(exp(lα[1])) -  sum(lgamma.(exp(lα[1])+H)) + sum((exp(lα[1])+H).* log.(n*Δ+β))
     result = optimize(GG(β, H, Δ, n, N), [0.0], BFGS())
     exp.(result.minimizer)[1]

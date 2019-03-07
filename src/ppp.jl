@@ -1,6 +1,9 @@
 
+inference(data_choice::AbstractString) = inference(loadexample(data_choice)[1:2]...)
+
+
 ################ Generate or read data
-function inference(observations_;
+function inference(observations;
     title = "Poisson process", # optional caption for mcmc run
     summaryfile = nothing, # path to summaryfile or nothing
     T0 = 0.0, # start time
@@ -16,19 +19,9 @@ function inference(observations_;
     verbose = true
 )
 
-
-    if T0 == 0
-        observations = observations_
-    else
-        T -= T0
-        observations = observations_ - T0
-    end
-
-
-
     ################ Data processing
 
-    breaks = range(0, stop=T, length=N+1) # linspace(0,T,N+1)
+    breaks = range(T0, stop=T, length=N+1) # linspace(0,T,N+1)
     Δ = diff(breaks)
 
     # if the observations are sorted, the bin counts can be computed faster
@@ -49,7 +42,7 @@ function inference(observations_;
 
     # option 1a: maximise marginal log-likelihood with independence prior
     Nmax = length(observations)÷2
-    Nvals, mll = marginal_loglikelihood(Nmax, observations, T, n, αind, βind)
+    Nvals, mll = marginal_loglikelihood(Nmax, observations, T0, T, n, αind, βind)
     Nopt = Nvals[argmax(mll)]
 
 
@@ -100,5 +93,5 @@ function inference(observations_;
         close(facc)
     end
 
-    return (title=title, observations = observations_, ψ = ψ, N = N, T0=T0, T = T + T0, breaks = breaks + T0, acc = acc)
+    return (title=title, observations = observations, ψ = ψ, N = N, T0 = T0, T = T, breaks = breaks, acc = acc)
 end

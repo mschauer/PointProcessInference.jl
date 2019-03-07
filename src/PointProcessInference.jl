@@ -16,4 +16,6 @@ end
 
 include("ppp.jl")
 
+ggplot2() = include(joinpath(dirname(pathof(PointProcessInference)), "..", "contrib", "process-output-simple.jl"))
+
 end # module

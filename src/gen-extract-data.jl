@@ -53,7 +53,7 @@ function loadexample(data_choice)
         # Specify intensity function
         λ = x ->  2* (5 + 4*cos(x)) * exp(-x/5)
         λmax = λ(0.0)
-        observations = samplepoisson((x,n)->λ(x)*n, n*λmax, T, n)   # sample ppp on [0,T] with intensity function λ
+        observations = samplepoisson((x,n)->λ(x)*n, n*λmax, 0.0, T, n)   # sample ppp on [0,T] with intensity function λ
     elseif data_choice=="mass-shooting"
         ### Read mass shooting data
         n = 1
