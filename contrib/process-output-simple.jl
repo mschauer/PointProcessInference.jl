@@ -2,7 +2,7 @@ using DataFrames
 using Statistics
 using RCall
 
-
+@rlibrary ggplot2
 
 function plotposterior(res; figtitle="Markov chain prior", offset=0, hortics=0)
         ψ= res.ψ
