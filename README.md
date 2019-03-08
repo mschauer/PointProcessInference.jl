@@ -25,7 +25,8 @@ Now we postulate that a priori the coefficients *ψ* form a Gamma Markov chain (
 via the Gibbs sampler. The data-generating intensity is not assumed to be necessarily piecewise constant. Our methodology provides both a point estimate of the intensity function (posterior mean) and uncertainty quantification via marginal credible bands; see the figure below for an illustration.
 
 <img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal.png" alt="Intensity estimate for the mining data." width="67%">
-*Illustration: Intensity estimation for the UK coal mining disasters data (1851-1962). The data are displayed via the rug plot in the upper margin of the plot, the posterior mean is given by a solid black line, while a 95% marginal credible band is shaded in light blue.*
+
+* Illustration: Intensity estimation for the UK coal mining disasters data (1851-1962). The data are displayed via the rug plot in the upper margin of the plot, the posterior mean is given by a solid black line, while a 95% marginal credible band is shaded in light blue.
 
 ## Installation
 
@@ -55,25 +56,45 @@ res = PointProcessInference.inference(observations; parameters...)
 The main procedure has signature
 
 ```julia
-ppinference(observations; title = "Poisson process", T = 1.0, n = 1, ...)
+ PointProcessInference.inference(observations; title = "Poisson process", T = 1.0, n = 1, ...)
 ```
 
 where `observations` is the sorted vector of Poisson event times, `T` is the endpoint of the time interval considered, and if
-`observations` is an aggregate of `n` different independent observations (say aggregated for `n` days), this can be indicated by the parameter `n > 1`.
+`observations` is an aggregate of `n` different independent observations (say aggregated for `n` days), this can be indicated by the parameter `n > 1`. A full list of parameters is as follows:
+
+```julia
+function inference(observations;
+    title = "Poisson process", # optional caption for mcmc run
+    summaryfile = nothing, # path to summaryfile or nothing
+    T0 = 0.0, # start time
+    T = maximum(observations), # end time
+    n = 1, # number of aggregated samples in `observations`
+    N = min(length(observations)÷4, 50), # number of bins
+    IT = 30000, # number of iterations
+    α1 = 0.1, β1 = 0.1, # parameters for Gamma Markov chain
+    Π = Exponential(10), # prior on alpha
+    τ = 0.7, # Set scale for random walk update on log(α)
+    αind = 0.1, βind = 0.1, # parameters for the independence prior
+    emp_bayes = false, # estimate βind using empirical Bayes
+    verbose = true
+)
+```
 
 ## High-quality plots
 
-For high quality plotting, the package has a script `process-output-simple.jl` in the `contrib` folder that visualizes
+For high quality plotting, the package has a script `process-output-simple.jl` that visualizes
 the results with the help of `R` and `ggplot2`.
 After installing the additional dependencies
 ```
 pkg> add RCall
 pkg> add DataFrames
 ```
-call
+include the script (it is located in the `contrib` folder, the location can be retrieved by calling `PointProcessInference.plotscript()`) 
 ```
-include(joinpath(dirname(pathof(PointProcessInference)), "..", "contrib", "process-output-simple.jl"))
+include(PointProcessInference.plotscript())
+plotposterior(res)
 ```
-The script reads the variable `res`.
+
+The script starts `ggplot2` with `RCall` and `plotposterior` expects as argument the result `res` returned from `inference`.
 
 
