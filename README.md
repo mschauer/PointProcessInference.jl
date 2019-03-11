@@ -93,9 +93,38 @@ plotposterior(res)
 
 The script starts `ggplot2` with `RCall` and `plotposterior` expects as argument the result `res` returned from `inference`.
 
-## A simple example
+## Example 1
 
-<img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal1.png" alt="Intensity estimate for the mining data." width="67%">
+Here, we generate data from a nonhomogeneous Poissson process as follows:
+```julia
+λ0(x) =  (20 + 8*cos(x))
+λ0max = 28
+obs = PointProcessInference.samplepoisson(λ0, λ0max, 0, 10)
+```
+
+The nonparametric estimator is obtained by running
+```julia
+res = PointProcessInference.inference(obs)
+```
+Finally, a default graph is obtained by 
+```julia
+include(PointProcessInference.plotscript())
+plotposterior(res)
+```
+
+<img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal1.png" alt="Intensity estimate for example 1." width="67%">
+
+* Illustration: Intensity estimation for the generated data in example 1. The data are displayed via the rug plot in the upper margin of the plot, the posterior mean is given by a solid black line, while a 95% marginal credible band is shaded in light blue.
+
+A slightly refined plot, where the true intensity is added to the figure can be obtained by passing the data-generating intensity function as an extra argument.
+```julia
+plotposterior(res;figtitle="Cosine intensity", λ=λ0)
+```
+This results in the plot
+
+<img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal1.png" alt="Intensity estimate for example 1." width="67%">
+
+## Example 2
 
 * Illustration: Intensity estimation for the UK coal mining disasters data (1851-1962). The data are displayed via the rug plot in the upper margin of the plot, the posterior mean is given by a solid black line, while a 95% marginal credible band is shaded in light blue.
 
