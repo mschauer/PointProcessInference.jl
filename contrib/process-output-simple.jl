@@ -23,7 +23,7 @@ function plotposterior(res; figtitle="Markov chain prior", offset=0, hortics=0, 
         # dTrue contains the true intensity, evaluated on a grid
         if !(λ==0)
             gr = collect(range(minimum(breaks),step=0.02,stop=maximum(breaks)))
-            dTrue = DataFrame(x=gr, intensity=λ.(gr-offset))
+            dTrue = DataFrame(x=gr, intensity=λ.(gr .- offset))
         end
         # tMarkov sets the posterior mean (need to duplicate the final value)
         tMarkov = DataFrame(x=breaks, average=[vec(ave); vec(ave)[end]])
