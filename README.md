@@ -143,4 +143,4 @@ start = 1851+(28+31+15)/365
 plotposterior(res; figtitle="Coal mining disasters", offset = start,hortics=1850:10:1960)
 ```
 
-<img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal2s.png" alt="Intensity estimate for example 2." width="67%">
+<img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal2.png" alt="Intensity estimate for example 2." width="67%">
