@@ -1,7 +1,9 @@
 
 function registerdatadeps()
     register(DataDep("mass-shooting", "", "https://www.dropbox.com/s/6zr083w4hbia4d0/years_passed.csv?dl=1"))
-    register(DataDep("coal", "", "https://www.dropbox.com/s/uy6j8wru1nkqhw5/coal.csv?dl=1"))
+#    register(DataDep("coal", "", "https://www.dropbox.com/s/uy6j8wru1nkqhw5/coal.csv?dl=1"))
+    register(DataDep("coal", "", "https://ln.sync.com/dl/9f493b610#t4355f2p-z5tw8k6a-6g9ic5ax-smu59seu"))
+    
     register(DataDep("pptest", "", [
         "https://www.dropbox.com/s/kcqe58li0pevn3g/testdat_n1.csv?dl=1"
         "https://www.dropbox.com/s/hpcu0n4xdes2sbn/testdat_n5.csv?dl=1"
