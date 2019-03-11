@@ -112,7 +112,7 @@ include(PointProcessInference.plotscript())
 plotposterior(res)
 ```
 
-<img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal1.png" alt="Intensity estimate for example 1." width="67%">
+<img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/basicexample1.pdf" alt="Intensity estimate for example 1." width="67%">
 
 * Illustration: Intensity estimation for the generated data in example 1. The data are displayed via the rug plot in the upper margin of the plot, the posterior mean is given by a solid black line, while a 95% marginal credible band is shaded in light blue.
 
@@ -122,9 +122,25 @@ plotposterior(res;figtitle="Cosine intensity", λ=λ0)
 ```
 This results in the plot
 
-<img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal1.png" alt="Intensity estimate for example 1." width="67%">
+<img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/basicexample2.pdf" alt="Intensity estimate for example 1." width="67%">
 
 ## Example 2
 
+Here, we analyse the well knwon coal mining disasters data set. 
+```julia 
+observations, parameters, λinfo = PointProcessInference.loadexample("coal")
+res = PointProcessInference.inference(observations)
+plotposterior(res)
+```
+
+<img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal1.pdf" alt="Intensity estimate for example 2." width="67%">
+
 * Illustration: Intensity estimation for the UK coal mining disasters data (1851-1962). The data are displayed via the rug plot in the upper margin of the plot, the posterior mean is given by a solid black line, while a 95% marginal credible band is shaded in light blue.
 
+The horizontal tickmarks can be adjusted, as the offset date of the data, which is March 15, 1851 in this case.
+```julia 
+start = 1851+(28+31+15)/365
+plotposterior(res; figtitle="Coal mining disasters", offset = start,hortics=1850:10:1960)
+```
+
+<img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal2s.pdf" alt="Intensity estimate for example 2." width="67%">
