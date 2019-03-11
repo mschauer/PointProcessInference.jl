@@ -76,6 +76,11 @@ function inference(observations;
 )
 ```
 
+Iterates of *ψ* are obtained from
+```julia
+res.ψ
+```
+
 ## High-quality plots
 
 For high quality plotting, the package has a script `process-output-simple.jl` that visualizes
@@ -92,6 +97,7 @@ plotposterior(res)
 ```
 
 The script starts `ggplot2` with `RCall` and `plotposterior` expects as argument the result `res` returned from `inference`.
+For computing the posterior summary measures, the first half of the mcmc iterates are treated as burnin samples. 
 
 ## Example 1
 
