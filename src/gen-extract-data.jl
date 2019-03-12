@@ -1,6 +1,7 @@
 
 function registerdatadeps()
-    register(DataDep("mass-shooting", "", "https://www.dropbox.com/s/6zr083w4hbia4d0/years_passed.csv?dl=1"))
+#    register(DataDep("mass-shooting", "", "https://www.dropbox.com/s/6zr083w4hbia4d0/years_passed.csv?dl=1"))
+    register(DataDep("mass-shooting", "", "    https://ln.sync.com/dl/8d3de7900#xmz8m2yj-73nswfni-rmar3gj9-p5hwvkui"))
 #    register(DataDep("coal", "", "https://www.dropbox.com/s/uy6j8wru1nkqhw5/coal.csv?dl=1"))
     register(DataDep("coal", "", "https://ln.sync.com/dl/9f493b610#t4355f2p-z5tw8k6a-6g9ic5ax-smu59seu"))
     
@@ -8,7 +9,8 @@ function registerdatadeps()
         "https://www.dropbox.com/s/kcqe58li0pevn3g/testdat_n1.csv?dl=1"
         "https://www.dropbox.com/s/hpcu0n4xdes2sbn/testdat_n5.csv?dl=1"
         "https://www.dropbox.com/s/65i1fc7bo6uk206/testdat_n4000.csv?dl=1"
-        "https://www.dropbox.com/s/88iwtx60ziwevz4/simpson_n500.csv?dl=1"
+#        "https://www.dropbox.com/s/88iwtx60ziwevz4/simpson_n500.csv?dl=1"
+        "https://ln.sync.com/dl/e8365e4f0/tf8yezdd-u8n885k2-iacnc8qj-565sn67t"              
         "https://www.dropbox.com/s/qi8h75tdzj30adc/simpson_n200.csv?dl=1"
         "https://www.dropbox.com/s/nsbirz2o5lq0qq6/unit_intensity.csv?dl=1"
         ]))
