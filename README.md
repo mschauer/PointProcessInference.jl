@@ -66,7 +66,7 @@ function inference(observations;
     T = maximum(observations), # end time
     n = 1, # number of aggregated samples in `observations`
     N = min(length(observations)÷4, 50), # number of bins
-    IT = 30000, # number of iterations
+    samples = 1:1:30000, # run for `i in 1:last(samples)` iterations, save coefficients if `i ∈ samples`
     α1 = 0.1, β1 = 0.1, # parameters for Gamma Markov chain
     Π = Exponential(10), # prior on alpha
     τ = 0.7, # Set scale for random walk update on log(α)
@@ -76,7 +76,7 @@ function inference(observations;
 )
 ```
 
-Iterates of *ψ* are obtained from
+Iterates of *ψ* are the rows of the matrix
 ```julia
 res.ψ
 ```
@@ -90,13 +90,13 @@ After installing the additional dependencies
 pkg> add RCall
 pkg> add DataFrames
 ```
-include the script (it is located in the `contrib` folder, the location can be retrieved by calling `PointProcessInference.plotscript()`) 
+include the script (it is located in the `contrib` folder, the location can be retrieved by calling `PointProcessInference.plotscript()`)
 ```
 include(PointProcessInference.plotscript())
 plotposterior(res)
 ```
 
-The script starts `ggplot2` with `RCall`, and `plotposterior` expects as its argument the result `res` returned from `inference`. For computing the posterior summary measures, the first half of the mcmc iterates are treated as burnin samples. 
+The script starts `ggplot2` with `RCall`, and `plotposterior` expects as its argument the result `res` returned from `inference`. For computing the posterior summary measures, the first half of the mcmc iterates are treated as burnin samples.
 
 ## Example 1
 
@@ -111,7 +111,7 @@ The nonparametric estimator is obtained by running
 ```julia
 res = PointProcessInference.inference(obs)
 ```
-Finally, a default graph is obtained by 
+Finally, a default graph is obtained by
 ```julia
 include(PointProcessInference.plotscript())
 plotposterior(res)
@@ -131,8 +131,8 @@ This results in the plot
 
 ## Example 2
 
-Here, we analyse the well knwon coal mining disasters data set. 
-```julia 
+Here, we analyse the well knwon coal mining disasters data set.
+```julia
 observations, parameters, λinfo = PointProcessInference.loadexample("coal")
 res = PointProcessInference.inference(observations)
 plotposterior(res)
@@ -143,7 +143,7 @@ plotposterior(res)
 * Illustration: Intensity estimation for the UK coal mining disasters data (1851-1962). The data are displayed via the rug plot in the upper margin of the plot, the posterior mean is given by a solid black line, while a 95% marginal credible band is shaded in light blue.
 
 The horizontal tickmarks can be adjusted, as the offset date of the data, which is March 15, 1851 in this case.
-```julia 
+```julia
 start = 1851+(28+31+15)/365
 plotposterior(res; figtitle="Coal mining disasters", offset = start,hortics=1850:10:1960)
 ```

@@ -10,7 +10,7 @@ function inference(observations;
     T = maximum(observations), # end time
     n = 1, # number of aggregated samples in `observations`
     N = min(length(observations)÷4, 50), # number of bins
-    IT = 30000, # number of iterations
+    samples = 1:1:30000, # (sub-)samples to save
     α1 = 0.1, β1 = 0.1, # parameters for Gamma Markov chain
     Π = Exponential(10), # prior on alpha
     τ = 0.7, # Set scale for random walk update on log(α)
@@ -47,27 +47,48 @@ function inference(observations;
 
 
     ################### Initialisation of algorithms
+    first(samples) < 1 && throw(ArgumentError("first(samples) < 1)"))
+    SUBIT = length(samples)
+    IT = last(samples)
 
     # nr of iterations
-    ψ = zeros(IT, N)  # each row is an iteration
-    ζ = zeros(IT - 1, N)
+    ψ = zeros(SUBIT, N)  # each row is a (sub-) iteration
+    ζ = zeros(SUBIT - 1, N-1)
     α = zeros(IT)
-    α[1] = 1.0  # initial value for α
+    αc = 1.0
+    α[1] = αc  # initial value for α
     acc = zeros(Bool, IT - 1)  # keep track of MH acceptance
 
     # Initialise, by drawing under independence prior
     post_ind = zeros(N, 2)
+    ψc = zeros(N)
+    ζc = zeros(N-1)
+
     for k in 1:N
-    	post_ind[k,:] = [αind + H[k], βind + n*Δ[k]]  # note that second parameter is the rate
-    	ψ[1,k] = rand(Gamma(post_ind[k,1], 1.0/(post_ind[k,2])))
+    	post_ind[k,1] = αind + H[k]
+        post_ind[k,2] = βind + n*Δ[k]  # note that second parameter is the rate
+    	ψc[k] = rand(Gamma(post_ind[k,1], 1.0/(post_ind[k,2])))
+    end
+
+
+    ss = 1 # keep track of subsample number
+    if 1 in samples
+        ψ[ss, :] = ψc
+        ss += 1
     end
 
     # Gibbs sampler
-    tt = @elapsed for i in 1:(IT-1)
-        αψ = αζ = α[i]
-        ζ[i,:] = updateζ(ψ[i,:], αψ, αζ)
-        ψ[i+1,:] = updateψ(H, Δ, n, ζ[i,:], αψ, αζ, α1, β1)
-        α[i+1], acc[i] = updateα(α[i], ψ[i + 1,:], ζ[i,:], τ,  Π)
+    tt = @elapsed for i in 2:IT
+        αψ = αζ = αc
+        updateζ!(ζc, ψc, αψ, αζ)
+        updateψ!(ψc, H, Δ, n, ζc, αψ, αζ, α1, β1)
+        α[i], acc[i-1] = updateα(αc, ψc, ζc, τ, Π)
+        αc = α[i]
+        if i in samples
+            ψ[ss,:] = ψc
+            ζ[ss - 1,:] = ζc
+            ss += 1
+        end
     end
 
     if verbose
