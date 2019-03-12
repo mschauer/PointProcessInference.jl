@@ -1,8 +1,6 @@
 julia 0.7
 Distributions
 Optim
-Random
-Statistics
 DelimitedFiles
 SpecialFunctions
 DataDeps
