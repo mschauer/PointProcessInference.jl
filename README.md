@@ -61,7 +61,7 @@ where `observations` is the sorted vector of Poisson event times, `T` is the end
 ```julia
 function inference(observations;
     title = "Poisson process", # optional caption for mcmc run
-    summaryfile = nothing, # path to summaryfile or nothing
+    summaryfile = nothing, # path to summary file or nothing
     T0 = 0.0, # start time
     T = maximum(observations), # end time
     n = 1, # number of aggregated samples in `observations`
@@ -70,7 +70,7 @@ function inference(observations;
     α1 = 0.1, β1 = 0.1, # parameters for Gamma Markov chain
     Π = Exponential(10), # prior on alpha
     τ = 0.7, # Set scale for random walk update on log(α)
-    αind = 0.1, βind = 0.1, # parameters for the independence prior
+    αind = 0.1, βind = 0.1, # parameters for the independent Gamma prior
     emp_bayes = false, # estimate βind using empirical Bayes
     verbose = true
 )
@@ -96,8 +96,7 @@ include(PointProcessInference.plotscript())
 plotposterior(res)
 ```
 
-The script starts `ggplot2` with `RCall` and `plotposterior` expects as argument the result `res` returned from `inference`.
-For computing the posterior summary measures, the first half of the mcmc iterates are treated as burnin samples. 
+The script starts `ggplot2` with `RCall`, and `plotposterior` expects as its argument the result `res` returned from `inference`. For computing the posterior summary measures, the first half of the mcmc iterates are treated as burnin samples. 
 
 ## Example 1
 
