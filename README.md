@@ -149,3 +149,17 @@ plotposterior(res; figtitle="Coal mining disasters", offset = start,hortics=1850
 ```
 
 <img src="https://raw.githubusercontent.com/mschauer/PointProcessInference.jl/master/assets/coal2.png" alt="Intensity estimate for example 2." width="67%">
+
+## Citing the package
+
+If you use the package in your work, we encourage you to cite it using the following BibTeX code:
+
+```
+@Manual{pppjl,
+  title = {PointProcessInference 0.1.0 -- Code and Julia package accompanying the article ``Gugushvili, van der Meulen, Schauer, Spreij (2018): Fast and scalable non-parametric Bayesian inference for Poisson point processes" (\url{http://arxiv.org/abs/1804.03616})},
+  author = {Shota Gugushvili, Frank van der Meulen, Moritz Schauer and Peter Spreij},
+  year = {2019},
+  doi = {10.5281/zenodo.2591395},
+  url = {https://doi.org/10.5281/zenodo.2591395},
+}
+```
