@@ -1,6 +1,6 @@
 name = "PointProcessInference"
-uuid = "28424f70-3b69-11e9-2c4c-498c5ce0442d"
-authors = ["SebaGraz <43820633+SebaGraz@users.noreply.github.com>"]
+uuid = "e7521202-fd63-590f-a507-4e5145ac8dd0"
+authors = ["Shota Gugushvili, Frank van der Meulen, Moritz Schauer, Peter Sprei"]
 version = "0.1.0"
 
 [deps]
