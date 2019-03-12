@@ -61,11 +61,14 @@ function inference(observations;
 
     # Initialise, by drawing under independence prior
     post_ind = zeros(N, 2)
-    for k in 1:N
-    	post_ind[k,:] = [αind + H[k], βind + n*Δ[k]]  # note that second parameter is the rate
-    	ψc = rand(Gamma(post_ind[k,1], 1.0/(post_ind[k,2])))
-    end
+    ψc = zeros(N)
     ζc = zeros(N-1)
+
+    for k in 1:N
+    	post_ind[k,:] = αind + H[k], βind + n*Δ[k]  # note that second parameter is the rate
+    	ψc[k] = rand(Gamma(post_ind[k,1], 1.0/(post_ind[k,2])))
+    end
+
 
     ss = 1 # keep track of subsample number
     if 1 in samples
