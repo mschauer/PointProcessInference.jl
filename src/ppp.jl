@@ -65,7 +65,8 @@ function inference(observations;
     ζc = zeros(N-1)
 
     for k in 1:N
-    	post_ind[k,:] = αind + H[k], βind + n*Δ[k]  # note that second parameter is the rate
+    	post_ind[k,1] = αind + H[k]
+        post_ind[k,2] = βind + n*Δ[k]  # note that second parameter is the rate
     	ψc[k] = rand(Gamma(post_ind[k,1], 1.0/(post_ind[k,2])))
     end
 
@@ -73,7 +74,6 @@ function inference(observations;
     ss = 1 # keep track of subsample number
     if 1 in samples
         ψ[ss, :] = ψc
-        ψ[ss, :] = ζc # just saves zeros though
         ss += 1
     end
 
@@ -82,11 +82,11 @@ function inference(observations;
         αψ = αζ = αc
         updateζ!(ζc, ψc, αψ, αζ)
         updateψ!(ψc, H, Δ, n, ζc, αψ, αζ, α1, β1)
-        α[i], acc[i] = updateα(αc, ψc, ζc, τ, Π)
+        α[i], acc[i-1] = updateα(αc, ψc, ζc, τ, Π)
         αc = α[i]
         if i in samples
             ψ[ss,:] = ψc
-            ζ[ss,:] = ζc
+            ζ[ss - 1,:] = ζc
             ss += 1
         end
     end
