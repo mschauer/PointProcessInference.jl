@@ -96,7 +96,7 @@ include(PointProcessInference.plotscript())
 plotposterior(res)
 ```
 
-The script starts `ggplot2` with `RCall`, and `plotposterior` expects as its argument the result `res` returned from `inference`. For computing the posterior summary measures, the first half of the mcmc iterates are treated as burnin samples.
+The script starts `ggplot2` with `RCall`, and `plotposterior` expects as its argument the result `res` returned from `inference`. For computing the posterior summary measures, the first half of the MCMC iterates is treated as burnin samples.
 
 ## Example 1
 
