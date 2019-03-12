@@ -10,7 +10,7 @@ function registerdatadeps()
         "https://www.dropbox.com/s/hpcu0n4xdes2sbn/testdat_n5.csv?dl=1"
         "https://www.dropbox.com/s/65i1fc7bo6uk206/testdat_n4000.csv?dl=1"
 #        "https://www.dropbox.com/s/88iwtx60ziwevz4/simpson_n500.csv?dl=1"
-        "https://ln.sync.com/dl/e8365e4f0/tf8yezdd-u8n885k2-iacnc8qj-565sn67t"              
+        "https://ln.sync.com/dl/8d3de7900#xmz8m2yj-73nswfni-rmar3gj9-p5hwvkui"              
         "https://www.dropbox.com/s/qi8h75tdzj30adc/simpson_n200.csv?dl=1"
         "https://www.dropbox.com/s/nsbirz2o5lq0qq6/unit_intensity.csv?dl=1"
         ]))
