@@ -66,7 +66,7 @@ function inference(observations;
     T = maximum(observations), # end time
     n = 1, # number of aggregated samples in `observations`
     N = min(length(observations)÷4, 50), # number of bins
-    IT = 30000, # number of iterations
+    samples = 1:1:30000, # run for `i in 1:last(samples)` iterations, save coefficients if `i ∈ samples`
     α1 = 0.1, β1 = 0.1, # parameters for Gamma Markov chain
     Π = Exponential(10), # prior on alpha
     τ = 0.7, # Set scale for random walk update on log(α)

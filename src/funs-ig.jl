@@ -59,7 +59,7 @@ function counts_sorted(xx, grid)
 ################# functions for updating
 
 """
-    updateψ
+    updateψ!
 
 Sample from the distribution of ψ, conditional on ζ, αψ and αζ.
 
@@ -86,7 +86,7 @@ function updateψ!(ψ, H::Array{Int64}, Δ::AbstractArray, n::Integer, ζ::Abstr
 end
 
 """
-    updateζ
+    updateζ!
 
 Sample from the distribution of ζ, conditional on ψ, αψ and αζ.
 
@@ -95,7 +95,7 @@ Arguments:
 - αψ
 - αζ
 """
-function updateζ(ζ, ψ::AbstractArray, αψ, αζ)
+function updateζ!(ζ, ψ::AbstractArray, αψ, αζ)
     N = length(ψ)
     for k in 2:N
         ζ[k-1] = rand(InverseGamma(αψ + αζ, αζ*ψ[k-1] + αψ*ψ[k]))

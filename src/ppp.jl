@@ -65,9 +65,12 @@ function inference(observations;
     	post_ind[k,:] = [αind + H[k], βind + n*Δ[k]]  # note that second parameter is the rate
     	ψc = rand(Gamma(post_ind[k,1], 1.0/(post_ind[k,2])))
     end
-    ss = 1
+    ζc = zeros(N-1)
+
+    ss = 1 # keep track of subsample number
     if 1 in samples
         ψ[ss, :] = ψc
+        ψ[ss, :] = ζc # just saves zeros though
         ss += 1
     end
 
