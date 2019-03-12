@@ -73,16 +73,15 @@ Arguments:
 - α1          (shape parameter of Gamma prior on ψ[1])
 - β1          (rate parameter of Gamma prior on ψ[1])
 """
-function updateψ(H::Array{Int64}, Δ::AbstractArray, n::Integer, ζ::AbstractArray,
+function updateψ!(ψ, H::Array{Int64}, Δ::AbstractArray, n::Integer, ζ::AbstractArray,
     αψ, αζ, α1, β1
 )
     N = length(H)
-    ψ = zeros(N)
-    ψ[1] = rand(Gamma(α1 + αζ + H[1], 1.0/(β1 + αζ/ζ[2] + n*Δ[1])))
+    ψ[1] = rand(Gamma(α1 + αζ + H[1], 1.0/(β1 + αζ/ζ[1] + n*Δ[1])))
     for k in 2:(N-1)
-        ψ[k] = rand(Gamma(αψ + αζ + H[k], 1.0/(αψ/ζ[k] + αζ/ζ[k+1] + n*Δ[k])))
+        ψ[k] = rand(Gamma(αψ + αζ + H[k], 1.0/(αψ/ζ[k-1] + αζ/ζ[k] + n*Δ[k])))
     end
-    ψ[N] = rand(Gamma(αψ + H[N], 1.0/(αψ/ζ[N] + n*Δ[N])))
+    ψ[N] = rand(Gamma(αψ + H[N], 1.0/(αψ/ζ[N-1] + n*Δ[N])))
     ψ
 end
 
@@ -96,11 +95,10 @@ Arguments:
 - αψ
 - αζ
 """
-function updateζ(ψ::AbstractArray, αψ, αζ)
+function updateζ(ζ, ψ::AbstractArray, αψ, αζ)
     N = length(ψ)
-    ζ = zeros(N)
     for k in 2:N
-        ζ[k] = rand(InverseGamma(αψ + αζ, αζ*ψ[k-1] + αψ*ψ[k]))
+        ζ[k-1] = rand(InverseGamma(αψ + αζ, αζ*ψ[k-1] + αψ*ψ[k]))
     end
     ζ
 end
@@ -123,7 +121,7 @@ Arguments:
 function sumψζ(ψ::AbstractArray, ζ::AbstractArray)
     res = 0.0
     for k in 2:length(ψ)
-        res += log(ψ[k-1]) + log(ψ[k]) - 2*log(ζ[k]) - (ψ[k-1] + ψ[k])/ζ[k]
+        res += log(ψ[k-1]) + log(ψ[k]) - 2*log(ζ[k-1]) - (ψ[k-1] + ψ[k])/ζ[k-1]
     end
     res
 end
