@@ -32,6 +32,13 @@ Change julia into the package manager mode by hitting `]`. Then run the command 
 pkg> add https://github.com/mschauer/PointProcessInference.jl
 ```
 
+### Troubleshooting
+
+The automatic download of datasets currently only works on the master branch of `HTTP.jl`
+```
+pkg> add HTTP#master
+```
+
 ## Usage
 
 In the following example we load the UK coal mining disasters data and
