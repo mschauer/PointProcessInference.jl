@@ -138,7 +138,7 @@ This results in the plot
 
 ## Example 2
 
-Here, we analyse the well knwon coal mining disasters data set.
+Here, we analyse the well-known coal mining disasters data set.
 ```julia
 observations, parameters, λinfo = PointProcessInference.loadexample("coal")
 res = PointProcessInference.inference(observations)
