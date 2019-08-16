@@ -26,10 +26,10 @@ via the Gibbs sampler. The data-generating intensity is not assumed to be necess
 
 ## Installation
 
-Change julia into the package manager mode by hitting `]`. Then run the command `add https://github.com/mschauer/PointProcessInference.jl`.
+Change julia into the package manager mode by hitting `]`. Then run the command `add  PointProcessInference`.
 
 ```
-pkg> add https://github.com/mschauer/PointProcessInference.jl
+pkg> add PointProcessInference
 ```
 
 ### Troubleshooting
