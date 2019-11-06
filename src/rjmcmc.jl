@@ -94,10 +94,17 @@ logtargetinit = PointProcessInference.mloglikelihood(Ninit, observations,T, n, �
 ψinit = postψ(Hvec[Ninit],Δvec[Ninit],α,β,n)
 states = [State(Ninit,logtargetinit,ψinit)]
 
-ITER = 500
+ITER = 1000
 η = 0.45 # prob of moving to other model
 
+breaksvec = Float64[]
+ψvec = Float64[]
+itervec = Int64[]
+
 for i in 2:ITER
+	global breaksvec
+	global ψvec
+	global itervec
 	N = states[i-1].modelindex
 	Nᵒ = modelindexproposal(N;η=η)
 	print("propose ", N, " to ", Nᵒ)
@@ -112,6 +119,34 @@ for i in 2:ITER
 		push!(states, State(N,states[i-1].logtarget,ψ))
 		println("   --")
 	end
+
+	St = states[i]
+	breaksvec = vcat(breaksvec, collect(range(0,T,length=St.modelindex+1)))
+	ψvec = vcat(ψvec, vcat(St.ψ,St.ψ[end]))
+	itervec = vcat(itervec, fill(i,St.modelindex+1))
+
+
 end
 
 print(states)
+
+
+ # plot a particular State
+using DataFrames
+using RCall
+
+# St = states[35]
+# df = DataFrame(x=collect(range(0,T,length=St.modelindex+1)),y=vcat(St.ψ,St.ψ[end]))
+
+df = DataFrame(x=breaksvec, y= ψvec, iter=itervec)
+@rput df
+
+
+R"""
+library(tidyverse)
+library(ggplot2)
+df %>% #sample_n(.,size=150) %>%
+mutate(iter=as.factor(iter)) %>%
+ggplot(aes(x=x,y=y,colour=iter)) + geom_step() +
+theme(legend.position="none")
+"""
