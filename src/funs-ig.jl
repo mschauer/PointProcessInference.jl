@@ -149,18 +149,25 @@ function updateα(α, ψ::AbstractArray, ζ::AbstractArray, τ, Π)
     end
 end
 
-# compute marginal likelihood for N=2..Nmax, here Nmax should be >=2
-function marginal_loglikelihood(Nmax::Integer, observations::AbstractVector,
-                       T0, T, n::Integer, αind, βind)
-    mll = zeros(Nmax-1)
-    for N in 2:Nmax
-        breaks = range(T0, stop=T, length=N+1)
-        Δ = diff(breaks)
-        H = counts(observations, breaks)
-        ltip = lgamma.(αind .+ H) .- (αind .+ H) .* log.(n*Δ .+ βind) # ltip = log terms in product
-        mll[N-1] = (T-T0)*n + αind*N*log(βind) - N*lgamma(αind) + sum(ltip)
-    end
-    2:Nmax, mll
+
+"""
+ compute marginal likelihood for N=2..Nmax, here Nmax should be >=2
+"""
+function marginal_loglikelihood(Nmax::Int64, observations, T, n, α, β)
+  mll = [mloglikelihood(N, observations,T, n, α, β) for N in 2:Nmax]
+  2:Nmax, mll
+end
+
+"""
+    Compute marginal likelihood for N segments (N+1 break points)
+"""
+function mloglikelihood(N::Int64, observations,T, n, α, β)
+    breaks = range(0,T,length=N+1)#linspace(0,T,N+1)
+    Δ = diff(breaks)
+    H = counts(observations, breaks)
+    ltip = SpecialFunctions.lgamma.(α .+ H) .- (αind .+ H).*log.(n*Δ .+ β)  # ltip = log terms in product
+    out = T * n + α * N * log(β) -N *lgamma(αind) + sum(ltip)
+    out
 end
 
 function elpd_DIC(Nmax::Integer, observations::AbstractVector,
