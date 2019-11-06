@@ -165,8 +165,8 @@ function mloglikelihood(N::Int64, observations,T, n, α, β)
     breaks = range(0,T,length=N+1)#linspace(0,T,N+1)
     Δ = diff(breaks)
     H = counts(observations, breaks)
-    ltip = SpecialFunctions.lgamma.(α .+ H) .- (αind .+ H).*log.(n*Δ .+ β)  # ltip = log terms in product
-    out = T * n + α * N * log(β) -N *lgamma(αind) + sum(ltip)
+    ltip = SpecialFunctions.lgamma.(α .+ H) .- (α .+ H).*log.(n*Δ .+ β)  # ltip = log terms in product
+    out = T * n + α * N * log(β) -N *lgamma(α) + sum(ltip)
     out
 end
 

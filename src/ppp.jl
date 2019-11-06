@@ -1,7 +1,6 @@
 
 inference(data_choice::AbstractString) = inference(loadexample(data_choice)[1:2]...)
 
-
 ################ Generate or read data
 function inference(observations;
     title = "Poisson process", # optional caption for mcmc run
