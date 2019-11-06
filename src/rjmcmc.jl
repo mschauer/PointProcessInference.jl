@@ -6,7 +6,7 @@ cd(workdir)
 
 # Make small test example
 T = 10.0   # observation interval
-n = 50   # number of copies of PPP observed
+n = 250   # number of copies of PPP observed
 # Specify intensity function
 λ = x ->  2* (5 + 4*cos(x)) * exp(-x/5)
 λmax = λ(0.0)
@@ -128,7 +128,7 @@ for i in 2:ITER
 
 end
 
-print(states)
+
 
 
  # plot a particular State
@@ -142,11 +142,35 @@ df = DataFrame(x=breaksvec, y= ψvec, iter=itervec)
 @rput df
 
 
+
+# extract states during iterations
+dfmodel = DataFrame(model= map(x->x.modelindex, states), iter=collect(1:ITER))
+@rput dfmodel
+
+# gr = collect(0:0.01:10)
+# dftrueintensity = DataFrame(x=gr,y=λ.(gr) )
+# @rput dftrueintensity
+
 R"""
 library(tidyverse)
 library(ggplot2)
-df %>% #sample_n(.,size=150) %>%
-mutate(iter=as.factor(iter)) %>%
-ggplot(aes(x=x,y=y,colour=iter)) + geom_step() +
-theme(legend.position="none")
+library(gridExtra)
+
+trueintens <- function(x) {
+	2* (5 + 4*cos(x)) * exp(-x/5)
+}
+
+
+p1 <- df  %>%
+mutate(iteration=as.factor(iter)) %>%
+ggplot(aes(x=x,y=y,group=iteration,colour=iter)) + geom_step() +
+ stat_function(fun = trueintens,colour='red')
+
+p2 <- df %>% dplyr::filter(iter>500) %>%
+mutate(iteration=as.factor(iter)) %>%
+ggplot(aes(x=x,y=y,group=iteration,colour=iter)) + geom_step() +
+ stat_function(fun = trueintens,colour='red')
+
+p3 <- dfmodel %>% ggplot(aes(x=iter,y=model)) + geom_point()
+grid.arrange(p1,p2,p3,ncol=1)
 """
