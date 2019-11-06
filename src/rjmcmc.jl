@@ -4,6 +4,7 @@ workdir = @__DIR__
 println(workdir)
 cd(workdir)
 
+# Make small test example
 T = 10.0   # observation interval
 n = 50   # number of copies of PPP observed
 # Specify intensity function
@@ -12,16 +13,16 @@ n = 50   # number of copies of PPP observed
 observations =  PointProcessInference.samplepoisson((x,n)->λ(x)*n, n*λmax, 0.0, T, n)
 sorted = false
 
+# At each iteration we keep track of a State
 struct State
     modelindex::Int64
     logtarget::Float64
     ψ::Vector{Float64}
 end
 
+# precompute Δ en H for all models considered (could also do this 'on the fly', but that would amount to recomputing the same quantities many times)
 Nmax = 40
-
-# precompute Δ en H for all models
-Δvec = Vector{Float64}[]#zeros(Nmax)
+Δvec = Vector{Float64}[]
 Hvec = Vector{Int64}[]
 for N in 1:Nmax
 	breaks = range(0,T,length=N+1)
@@ -34,19 +35,17 @@ for N in 1:Nmax
 end
 
 """
-	Sample ψ from its posterior distribution
+	Sample ψ from its posterior distribution within a particular model
+
+	(α,β): are parameters of Gamma-prior on bin size
+	n: nr  of observations
+	H, Δ:  bin characteristics for posterior pars
 """
-function postψ(H,Δ,α,β,n)
-	N = length(H)
-	out = zeros(N)
-	for k in 1:N
-		out[k] = rand(Gamma(α+H[k], 1.0/(β+n*Δ[k])))
-	end
-	out
-end
+postψ(H,Δ,α,β,n) = [rand(Gamma(α+H[k], 1.0/(β+n*Δ[k]))) for k in eachindex(H)]
+
 
 """
-	log π(N)
+	log π(N), presently all models are equally likely
 """
 function logpriormodel(N)
 	0.0
@@ -88,8 +87,8 @@ function modelindexproposal(N;η=0.4)
 		end
 	end
 end
-α = β = 0.1
 
+α = β = 0.1
 Ninit = 2
 logtargetinit = PointProcessInference.mloglikelihood(Ninit, observations,T, n, α, β) + logpriormodel(Ninit)
 ψinit = postψ(Hvec[Ninit],Δvec[Ninit],α,β,n)
@@ -105,11 +104,14 @@ for i in 2:ITER
 	logtargetᵒ = PointProcessInference.mloglikelihood(Nᵒ, observations,T, n, α, β) + logpriormodel(Nᵒ)
 	A = logtargetᵒ - states[i-1].logtarget + log(proposalratio(N,Nᵒ;η=η))
 	if (log(rand())<A)
-			ψᵒ = postψ(Hvec[Nᵒ],Δvec[Nᵒ],α,β,n)
-			push!(states, State(Nᵒ,logtargetᵒ,ψᵒ))
-			println("   acc")
+		ψᵒ = postψ(Hvec[Nᵒ],Δvec[Nᵒ],α,β,n)
+		push!(states, State(Nᵒ,logtargetᵒ,ψᵒ))
+		println("   acc")
 	else
-		push!(states, states[i-1])
+		ψ = postψ(Hvec[N],Δvec[N],α,β,n)
+		push!(states, State(N,states[i-1].logtarget,ψ))
 		println("   --")
 	end
 end
+
+print(states)
