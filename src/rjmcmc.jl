@@ -1,4 +1,4 @@
-
+using DelimitedFiles
 
 workdir = @__DIR__
 println(workdir)
@@ -6,12 +6,16 @@ cd(workdir)
 
 # Make small test example
 T = 10.0   # observation interval
-n = 250   # number of copies of PPP observed
+n = 1   # number of copies of PPP observed
 # Specify intensity function
 λ = x ->  2* (5 + 4*cos(x)) * exp(-x/5)
 λmax = λ(0.0)
 observations =  PointProcessInference.samplepoisson((x,n)->λ(x)*n, n*λmax, 0.0, T, n)
 sorted = false
+
+n = 1
+T = 10.0
+observations = vec(readdlm("testdat_n1.csv"))
 
 # At each iteration we keep track of a State
 struct State
@@ -151,6 +155,10 @@ dfmodel = DataFrame(model= map(x->x.modelindex, states), iter=collect(1:ITER))
 # dftrueintensity = DataFrame(x=gr,y=λ.(gr) )
 # @rput dftrueintensity
 
+mloglik = [PointProcessInference.mloglikelihood(Nᵒ, observations,T, n, α, β) for Nᵒ in 1:Nmax]
+mll_df = DataFrame(x=1:Nmax,y=mloglik)
+@rput mll_df
+
 R"""
 library(tidyverse)
 library(ggplot2)
@@ -172,5 +180,8 @@ ggplot(aes(x=x,y=y,group=iteration,colour=iter)) + geom_step() +
  stat_function(fun = trueintens,colour='red')
 
 p3 <- dfmodel %>% ggplot(aes(x=iter,y=model)) + geom_point()
-grid.arrange(p1,p2,p3,ncol=1)
+
+p4 <- mll_df %>% ggplot(aes(x=x,y=y)) + geom_point() + ggtitle("marginal loglikelihood")
+
+grid.arrange(p1,p2,p3,p4,ncol=1)
 """
