@@ -9,6 +9,9 @@ using DataDeps
 
 include("funs-ig.jl")
 include("gen-extract-data.jl")
+include("revjump.jl")
+
+export mloglikelihood, computebinning, revjump,  evalstepfunction
 
 function __init__()
     registerdatadeps()
