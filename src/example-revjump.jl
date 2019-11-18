@@ -1,6 +1,6 @@
  #add https://github.com/mschauer/PointProcessInference.jl#revjump
 using DelimitedFiles
-using PointProcessInference#revjump
+using PointProcessInference  #revjump
 using Distributions
 using DataFrames
 using RCall
@@ -15,7 +15,8 @@ observations = vec(readdlm("testdat_n1.csv"))
 
 ########## run the rev jump algorithm
 α = 0.1; β=0.1
-Δvec, Hvec = computebinning(observations,T; Nmax = 40)
+Nmax = 40
+Δvec, Hvec = computebinning(observations,T; Nmax = Nmax)
 priorN = DiscreteUniform(1,Nmax) #Poisson(23)
 ITER = 10000
 states, df = revjump(observations,T,n, Hvec, Δvec, priorN; ITER=ITER, α=α, β=β)

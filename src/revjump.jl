@@ -8,16 +8,16 @@ end
 """
  	precompute Δ en H for all models considered (could also do this 'on the fly', but that would amount to recomputing the same quantities many times)
 """
-function computebinning(T; Nmax = 40, sorted=false)
+function computebinning(T, observations; Nmax = 40, sorted=false)
 	Δvec = Vector{Float64}[]
 	Hvec = Vector{Int64}[]
 	for N in 1:Nmax
-		breaks = range(0,T,length=N+1)
+		breaks = range(0.0,T,length=N+1)
 		push!(Δvec,diff(breaks))
 		if sorted==true
-		  push!(Hvec, PointProcessInference.counts_sorted(observations, breaks))
+		  push!(Hvec, counts_sorted(observations, breaks))
 		else
-		  push!(Hvec, PointProcessInference.counts(observations, breaks))
+		  push!(Hvec, counts(observations, breaks))
 		end
 	end
 	Δvec, Hvec
