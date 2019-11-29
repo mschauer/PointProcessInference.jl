@@ -6,6 +6,7 @@ using Random, Statistics
 using DelimitedFiles
 using SpecialFunctions
 using DataDeps
+using DataFrames # FIX: add as dependency
 
 include("funs-ig.jl")
 include("gen-extract-data.jl")

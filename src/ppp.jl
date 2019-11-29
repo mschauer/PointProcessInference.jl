@@ -20,7 +20,7 @@ function inference(observations;
 
     ################ Data processing
 
-    breaks = range(T0, stop=T, length=N+1) # linspace(0,T,N+1)
+    breaks = range(T0, stop=T, length=N+1) 
     Δ = diff(breaks)
 
     # if the observations are sorted, the bin counts can be computed faster
@@ -41,7 +41,8 @@ function inference(observations;
 
     # option 1a: maximise marginal log-likelihood with independence prior
     Nmax = length(observations)÷2
-    Nvals, mll = marginal_loglikelihood(Nmax, observations, T0, T, n, αind, βind)
+    @assert T0==0.0
+    Nvals, mll = marginal_loglikelihood(Nmax, observations, T, n, αind, βind)
     Nopt = Nvals[argmax(mll)]
 
 

@@ -1,6 +1,7 @@
  #add https://github.com/mschauer/PointProcessInference.jl#revjump
 using DelimitedFiles
-using PointProcessInference  #revjump
+using PointProcessInference
+const PPI = PointProcessInference
 using Distributions
 using DataFrames
 using RCall
@@ -9,16 +10,16 @@ workdir = @__DIR__
 println(workdir)
 cd(workdir)
 
-T = 10.0   # observation interval
-n = 1   # number of copies of PPP observed
-observations = vec(readdlm("testdat_n1.csv"))
+observations, parameters, λinfo = PointProcessInference.loadexample("testdat_n1")
+T = parameters.T
+n = parameters.n
 
 ########## run the rev jump algorithm
 α = 0.1; β=0.1
 Nmax = 40
-Δvec, Hvec = computebinning(observations,T; Nmax = Nmax)
+Δvec, Hvec = computebinning(T, observations; Nmax = Nmax)
 priorN = DiscreteUniform(1,Nmax) #Poisson(23)
-ITER = 10000
+ITER = 10
 states, df = revjump(observations,T,n, Hvec, Δvec, priorN; ITER=ITER, α=α, β=β)
 
 ########## make dataframes for plotting

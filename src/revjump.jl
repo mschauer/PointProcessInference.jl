@@ -12,6 +12,7 @@ function computebinning(T, observations; Nmax = 40, sorted=false)
 	Δvec = Vector{Float64}[]
 	Hvec = Vector{Int64}[]
 	for N in 1:Nmax
+		
 		breaks = range(0.0,T,length=N+1)
 		push!(Δvec,diff(breaks))
 		if sorted==true
