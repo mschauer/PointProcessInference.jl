@@ -20,9 +20,10 @@ inference(data_choice::AbstractString) = inference(loadexample(data_choice)[1:2]
     )
 
     The function returns the tuple
-        (title=title, observations = observations, ψ = ψ, N = N, T0 = T0, T = T, breaks = breaks, acc = acc)
+        (title=title, observations = observations, ψ = ψ, α=α, N = N, T0 = T0, T = T, breaks = breaks, acc = acc)
     where ψ contains the mcmc iterates as specified by the argument 'samples'.
     Each row of ψ corresponds to 1 iterate and contains the value of the Poisson intensity function of the bins.
+    For α all iterates are returned.
 """
 function inference(observations;
     title = "Poisson process", # optional caption for mcmc run
@@ -137,5 +138,5 @@ function inference(observations;
         close(facc)
     end
 
-    return (title=title, observations = observations, ψ = ψ, N = N, T0 = T0, T = T, breaks = breaks, acc = acc)
+    return (title=title, observations = observations, ψ = ψ, α=α, N = N, T0 = T0, T = T, breaks = breaks, acc = acc)
 end
