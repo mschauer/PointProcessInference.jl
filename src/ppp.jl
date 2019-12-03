@@ -2,6 +2,28 @@
 inference(data_choice::AbstractString) = inference(loadexample(data_choice)[1:2]...)
 
 ################ Generate or read data
+"""
+    inference(observations;
+        title = "Poisson process", # optional caption for mcmc run
+        summaryfile = nothing, # path to summaryfile or nothing
+        T0 = 0.0,                             # start time
+        T = maximum(observations),            # end time
+        n = 1,                                # number of aggregated samples in `observations`
+        N = min(length(observations)÷4, 50),  # number of bins
+        samples = 1:1:30000,                  # (sub-)samples to save
+        α1 = 0.1, β1 = 0.1,                   # parameters for Gamma Markov chain
+        Π = Exponential(10),                  # prior on α
+        τ = 0.7,                              # Set scale for random walk update on log(α)
+        αind = 0.1, βind = 0.1,               # parameters for the independence prior
+        emp_bayes = false,                    # estimate βind using empirical Bayes
+        verbose = true
+    )
+
+    The function returns the tuple
+        (title=title, observations = observations, ψ = ψ, N = N, T0 = T0, T = T, breaks = breaks, acc = acc)
+    where ψ contains the mcmc iterates as specified by the argument 'samples'.
+    Each row of ψ corresponds to 1 iterate and contains the value of the Poisson intensity function of the bins.
+"""
 function inference(observations;
     title = "Poisson process", # optional caption for mcmc run
     summaryfile = nothing, # path to summaryfile or nothing
@@ -11,7 +33,7 @@ function inference(observations;
     N = min(length(observations)÷4, 50), # number of bins
     samples = 1:1:30000, # (sub-)samples to save
     α1 = 0.1, β1 = 0.1, # parameters for Gamma Markov chain
-    Π = Exponential(10), # prior on alpha
+    Π = Exponential(10), # prior on α
     τ = 0.7, # Set scale for random walk update on log(α)
     αind = 0.1, βind = 0.1, # parameters for the independence prior
     emp_bayes = false, # estimate βind using empirical Bayes
@@ -20,7 +42,7 @@ function inference(observations;
 
     ################ Data processing
 
-    breaks = range(T0, stop=T, length=N+1) 
+    breaks = range(T0, stop=T, length=N+1)
     Δ = diff(breaks)
 
     # if the observations are sorted, the bin counts can be computed faster
@@ -31,6 +53,7 @@ function inference(observations;
         sorted = false
         H = counts(observations, breaks)           # extract vector H
     end
+    println("Binning completed...")
 
     if emp_bayes == true
         βind = ebβ(αind, H, Δ, n, N)
@@ -40,10 +63,10 @@ function inference(observations;
     ################## Specification number of bins N
 
     # option 1a: maximise marginal log-likelihood with independence prior
-    Nmax = length(observations)÷2
-    @assert T0==0.0
-    Nvals, mll = marginal_loglikelihood(Nmax, observations, T, n, αind, βind)
-    Nopt = Nvals[argmax(mll)]
+    # Nmax = length(observations)÷2
+    # @assert T0==0.0
+    # Nvals, mll = marginal_loglikelihood(Nmax, observations, T, n, αind, βind)
+    # Nopt = Nvals[argmax(mll)]
 
 
     ################### Initialisation of algorithms

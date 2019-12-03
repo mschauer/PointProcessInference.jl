@@ -10,12 +10,12 @@ workdir = @__DIR__
 println(workdir)
 cd(workdir)
 
-observations, parameters, λinfo = PointProcessInference.loadexample("testdat_n1")
+observations, parameters, λinfo = PointProcessInference.loadexample("testdat_n4000")  # "testdat_n1"
 T = parameters.T
 n = parameters.n
 
 ########## run the rev jump algorithm
-α = 0.1; β=0.1
+α = 0.1; β = 0.1
 Nmax = 40
 Δvec, Hvec = computebinning(T, observations; Nmax = Nmax)
 priorN = DiscreteUniform(1,Nmax) #Poisson(23)
@@ -26,7 +26,7 @@ states, df = revjump(observations,T,n, Hvec, Δvec, priorN; ITER=ITER, α=α, β
 # df for models visited
 dfmodel = DataFrame(model= map(x->x.modelindex, states), iter=collect(1:ITER))
 # df for marginal likelihood
-mloglik = [PointProcessInference.mloglikelihood(N, observations,T, n, α, β) for N in 1:Nmax]
+mloglik = [PPI.mloglikelihood(N, observations,T, n, α, β) for N in 1:Nmax]
 mll_df = DataFrame(x=1:Nmax,y=mloglik)
 # df for posterior mean and quantiles
 Nfinest = maximum(dfmodel.model)  # finest level

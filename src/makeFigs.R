@@ -1,5 +1,5 @@
 # set working directory to 'wd', using 'setwd'
-
+setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 library(ggplot2)
 library(dplyr)
 library(gridExtra)

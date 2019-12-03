@@ -6,7 +6,8 @@ observations, parameters, λinfo = PointProcessInference.loadexample("testdat_n4
 T = parameters.T
 n = parameters.n
 
-res = PPI.inference(observations, title = "Poisson process", T = T, n = n, N=200)
+N = 500
+res = PPI.inference(observations, title = "Poisson process", T = T, n = n, N=N, τ=0.1)
 
-include(PointProcessInference.plotscript())
-plotposterior(res)
+include(PPI.plotscript())
+plotposterior(res,λ=λinfo.λ)
