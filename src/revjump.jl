@@ -8,14 +8,13 @@ end
 """
  	precompute Δ en H for all models considered (could also do this 'on the fly', but that would amount to recomputing the same quantities many times)
 """
-function computebinning(T, observations; Nmax = 40, sorted=false)
+function computebinning(T, observations, Nmax)
 	Δvec = Vector{Float64}[]
 	Hvec = Vector{Int64}[]
 	for N in 1:Nmax
-		
 		breaks = range(0.0,T,length=N+1)
 		push!(Δvec,diff(breaks))
-		if sorted==true
+		if issorted(observations)#sorted==true
 		  push!(Hvec, counts_sorted(observations, breaks))
 		else
 		  push!(Hvec, counts(observations, breaks))
@@ -23,6 +22,7 @@ function computebinning(T, observations; Nmax = 40, sorted=false)
 	end
 	Δvec, Hvec
 end
+
 
 
 """
@@ -73,12 +73,24 @@ function modelindexproposal(N; η=0.4)
 end
 
 """
-	observations: vector of observed times
+	revjump(observations,T,n, Hvec, Δvec, priorN; ITER=10000, Ninit =2, α = 0.1, β = 0.1, η=0.45)
+
+		observations: vector of observed times
+		T: endtime
+		n: number of aggregated samples in `observations`
+		ITER: nr of mcmc iterations
+		Ninit: index of first model (initialisation of the revjump algorithm)
+		αind , βind                Assume Gamma(αind,βind) prior on intensity function on bins (here βind is the rate parameter)
+		η: with prob η move up or down one model
+
 """
-function revjump(observations,T,n, Hvec, Δvec, priorN; ITER=10000, Ninit =2, α = 0.1, β = 0.1, η=0.45)
-	logtargetinit = PointProcessInference.mloglikelihood(Ninit, observations,T, n, α, β) +
+function revjump(observations,T,n, priorN; ITER=30_000, Ninit =2, αind = 0.1, βind = 0.1, η=0.45, Nmax=40)
+	@assert 0 <= η <= 0.5
+	Δvec, Hvec = computebinning(T, observations, Nmax)
+
+	logtargetinit = PointProcessInference.mloglikelihood(Ninit, observations,T, n, αind, βind) +
 							logpdf(priorN,Ninit)
-	ψinit = postψ(Hvec[Ninit],Δvec[Ninit],α,β,n)
+	ψinit = postψ(Hvec[Ninit],Δvec[Ninit],αind,βind,n)
 	states = [State(Ninit,logtargetinit,ψinit)]
 
 	breaksvec = Float64[]
@@ -88,14 +100,14 @@ function revjump(observations,T,n, Hvec, Δvec, priorN; ITER=10000, Ninit =2, α
 	for i in 2:ITER
 		N = states[i-1].modelindex
 		Nᵒ = modelindexproposal(N; η=η)
-		logtargetᵒ = PointProcessInference.mloglikelihood(Nᵒ, observations,T, n, α, β) +
+		logtargetᵒ = PointProcessInference.mloglikelihood(Nᵒ, observations,T, n, αind, βind) +
 							logpdf(priorN,Nᵒ)
 		A = logtargetᵒ - states[i-1].logtarget + log(proposalratio(N,Nᵒ;η=η))
 		if (log(rand())<A)
-			ψᵒ = postψ(Hvec[Nᵒ],Δvec[Nᵒ],α,β,n)
+			ψᵒ = postψ(Hvec[Nᵒ],Δvec[Nᵒ],αind,βind,n)
 			push!(states, State(Nᵒ,logtargetᵒ,ψᵒ))
 		else
-			ψ = postψ(Hvec[N],Δvec[N],α,β,n)
+			ψ = postψ(Hvec[N],Δvec[N],αind,βind,n)
 			push!(states, State(N,states[i-1].logtarget,ψ))
 		end
 		St = states[i]
@@ -106,7 +118,11 @@ function revjump(observations,T,n, Hvec, Δvec, priorN; ITER=10000, Ninit =2, α
 	states, DataFrame(x=breaksvec, y= ψvec, iter=itervec)
 end
 
-# evaluate stepfunction with weights ψ at point x ∈ [0,T], assuming length(ψ) equally sized bins
+"""
+	evalstepfunction(x,ψ,T)
+
+	Evaluate stepfunction with weights ψ at point x ∈ [0,T], assuming length(ψ) equally sized bins.
+"""
 function evalstepfunction(x,ψ,T)
 	if (x<0.0) | (x>=T)
 		return(0.0)
@@ -116,4 +132,5 @@ function evalstepfunction(x,ψ,T)
 		return(ψ[binindex])
 	end
 end
+
 evalstepfunction(ψ,T) = (x) -> evalstepfunction(x,ψ,T)
