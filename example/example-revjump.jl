@@ -16,9 +16,9 @@ n = parameters.n
 
 ########## run the rev jump algorithm
 αind = 0.1; βind = 0.1
-Nmax = 40
-priorN = DiscreteUniform(1,Nmax) #Poisson(23)
-ITER = 10_000
+Nmax = 50
+priorN = Poisson(23)#DiscreteUniform(1,Nmax) #
+ITER = 30_000
 T0 = 0.0
 states, df = revjump(observations,T0, T,n,priorN; ITER=ITER, αind=αind, βind=βind,Nmax=Nmax)
 
@@ -92,7 +92,8 @@ p <- dout %>%  ggplot() +
 	geom_ribbon(aes(x=x,ymin=lower,ymax=upper),fill="lightsteelblue1") +
 	geom_path(aes(x=x,y=ave),colour='black',size=1.3) +
 	 stat_function(fun = trueintens,colour='red',size=1.5)+
-		ggtitle("Reversible jump")+
+		#ggtitle("Discrete Uniform{1,...,50}")+
+		ggtitle("ShiftPoisson(23)")+
 	   theme(plot.title = element_text(hjust = 0.5))+xlab("")+ylab("")+
 xlim(0,T-10^(-5)) +  geom_rug(data=obsdf, mapping=aes(x=x), color="black",sides='t')
 
