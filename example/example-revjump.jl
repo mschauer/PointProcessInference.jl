@@ -19,16 +19,18 @@ n = parameters.n
 Nmax = 40
 priorN = DiscreteUniform(1,Nmax) #Poisson(23)
 ITER = 10_000
-states, df = revjump(observations,T,n,priorN; ITER=ITER, αind=αind, βind=βind,Nmax=Nmax)
-
+T0 = 0.0
+states, df = revjump(observations,T0, T,n,priorN; ITER=ITER, αind=αind, βind=βind,Nmax=Nmax)
 
 
 ########## make dataframes for plotting
 # df for models visited
 dfmodel = DataFrame(model= map(x->x.modelindex, states), iter=collect(1:ITER))
+
 # df for marginal likelihood
-mloglik = [PPI.mloglikelihood(N, observations,T, n, αind, βind) for N in 1:Nmax]
+mloglik = [PPI.mloglikelihood(N, observations,T0, T, n, αind, βind) for N in 1:Nmax]
 mll_df = DataFrame(x=1:Nmax,y=mloglik)
+
 # df for posterior mean and quantiles
 Nfinest = maximum(dfmodel.model)  # finest level
 xgrid = collect(range(0,T,step=0.001))
@@ -43,6 +45,7 @@ upper = vec(mapslices(v-> quantile(v, 1 - p/2), out; dims= 1))
 ave = vec(mean(out,dims=1))
 lower = vec(mapslices(v-> quantile(v,  p/2), out; dims= 1))
 dout = DataFrame(lower=lower,upper=upper, ave=ave,x=xgrid)
+
 # df for observations
 obsdf = DataFrame(x=observations)
 

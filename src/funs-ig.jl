@@ -153,16 +153,16 @@ end
 """
  compute marginal likelihood for N=2..Nmax, here Nmax should be >=2
 """
-function marginal_loglikelihood(Nmax::Int64, observations, T, n, α, β)
-  mll = [mloglikelihood(N, observations,T, n, α, β) for N in 2:Nmax]
+function marginal_loglikelihood(Nmax::Int64, observations,T0, T, n, α, β)
+  mll = [mloglikelihood(N, observations,T0, T, n, α, β) for N in 2:Nmax]
   2:Nmax, mll
 end
 
 """
     Compute marginal likelihood for N segments (N+1 break points)
 """
-function mloglikelihood(N::Int64, observations,T, n, α, β)
-    breaks = range(0,T,length=N+1)#linspace(0,T,N+1)
+function mloglikelihood(N::Int64, observations,T0, T, n, α, β)
+    breaks = range(T0,T,length=N+1)
     Δ = diff(breaks)
     H = counts(observations, breaks)
     ltip = first.(logabsgamma.(α .+ H)) .- (α .+ H).*log.(n*Δ .+ β)  # ltip = log terms in product

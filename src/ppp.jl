@@ -11,7 +11,7 @@ inference(data_choice::AbstractString) = inference(loadexample(data_choice)[1:2]
         n = 1,                                # number of aggregated samples in `observations`
         N = min(length(observations)÷4, 50),  # number of bins
         samples = 1:1:30000,                  # (sub-)samples to save
-        α1 = 0.1, β1 = 0.1,                   # parameters for Gamma Markov chain
+        α1 = 0.1, β1 = 0.1,                   # parameters for Gamma Markov chain (the prior on the left most bin is Gamma(α1,β1))
         Π = Exponential(10),                  # prior on α
         τ = 0.7,                              # Set scale for random walk update on log(α)
         αind = 0.1, βind = 0.1,               # parameters for the independence prior
@@ -66,7 +66,7 @@ function inference(observations;
     # option 1a: maximise marginal log-likelihood with independence prior
     # Nmax = length(observations)÷2
     # @assert T0==0.0
-    # Nvals, mll = marginal_loglikelihood(Nmax, observations, T, n, αind, βind)
+    # Nvals, mll = marginal_loglikelihood(Nmax, observations,T0, T, n, αind, βind)
     # Nopt = Nvals[argmax(mll)]
 
 

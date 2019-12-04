@@ -13,7 +13,7 @@ cd(workdir)
 
 
 # make specific function for plotting the results in this experiment
-function plotposterior2(res;  figtitle="Markov chain prior", λ=0, p=0.05)
+function plotposterior2(res;  figtitle="Markov chain prior", λ=0, p=0.05,offset=0)
         ψ = res.ψ
         A = view(ψ, size(ψ, 1)÷2:size(ψ, 1), :)
         upper = mapslices(v-> quantile(v, 1 - p/2), A, dims=1)
@@ -99,15 +99,15 @@ plotposterior2(res,λ=λinfo.λ, figtitle="N=5000, Levy(0,1)")
 observations, parameters, λinfo = PointProcessInference.loadexample("testdat_n1")
 T = parameters.T
 n = parameters.n
-N=30
+N = 30
 res = PPI.inference(observations, title = "Poisson process", T = T, n = n, N=N, τ=0.5,Π=Levy(0,1))
 plotposterior2(res,λ=λinfo.λ, figtitle="N=30, Levy(0,1)")
 
-N=100
+N = 100
 res = PPI.inference(observations, title = "Poisson process", T = T, n = n, N=N, τ=0.5,Π=Levy(0,1))
 plotposterior2(res,λ=λinfo.λ, figtitle="N=100, Levy(0,1)")
 
-N=30
+N = 30
 res = PPI.inference(observations, title = "Poisson process", T = T, n = n, N=N)
 plotposterior2(res,λ=λinfo.λ, figtitle="N=30, Exp(0.1)")
 

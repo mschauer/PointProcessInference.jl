@@ -8,11 +8,11 @@ end
 """
  	precompute Δ en H for all models considered (could also do this 'on the fly', but that would amount to recomputing the same quantities many times)
 """
-function computebinning(T, observations, Nmax)
+function computebinning(T0, T, observations, Nmax)
 	Δvec = Vector{Float64}[]
 	Hvec = Vector{Int64}[]
 	for N in 1:Nmax
-		breaks = range(0.0,T,length=N+1)
+		breaks = range(T0,T,length=N+1)
 		push!(Δvec,diff(breaks))
 		if issorted(observations)#sorted==true
 		  push!(Hvec, counts_sorted(observations, breaks))
@@ -84,11 +84,11 @@ end
 		η: with prob η move up or down one model
 
 """
-function revjump(observations,T,n, priorN; ITER=30_000, Ninit =2, αind = 0.1, βind = 0.1, η=0.45, Nmax=40)
+function revjump(observations,T0, T,n, priorN; ITER=30_000, Ninit =2, αind = 0.1, βind = 0.1, η=0.45, Nmax=40)
 	@assert 0 <= η <= 0.5
-	Δvec, Hvec = computebinning(T, observations, Nmax)
+	Δvec, Hvec = computebinning(T0, T, observations, Nmax)
 
-	logtargetinit = PointProcessInference.mloglikelihood(Ninit, observations,T, n, αind, βind) +
+	logtargetinit = PointProcessInference.mloglikelihood(Ninit, observations,T0, T, n, αind, βind) +
 							logpdf(priorN,Ninit)
 	ψinit = postψ(Hvec[Ninit],Δvec[Ninit],αind,βind,n)
 	states = [State(Ninit,logtargetinit,ψinit)]
@@ -100,7 +100,7 @@ function revjump(observations,T,n, priorN; ITER=30_000, Ninit =2, αind = 0.1, �
 	for i in 2:ITER
 		N = states[i-1].modelindex
 		Nᵒ = modelindexproposal(N; η=η)
-		logtargetᵒ = PointProcessInference.mloglikelihood(Nᵒ, observations,T, n, αind, βind) +
+		logtargetᵒ = PointProcessInference.mloglikelihood(Nᵒ, observations,T0, T, n, αind, βind) +
 							logpdf(priorN,Nᵒ)
 		A = logtargetᵒ - states[i-1].logtarget + log(proposalratio(N,Nᵒ;η=η))
 		if (log(rand())<A)
