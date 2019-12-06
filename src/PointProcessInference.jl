@@ -6,7 +6,7 @@ using Random, Statistics
 using DelimitedFiles
 using SpecialFunctions
 using DataDeps
-
+lgamma(x) = (logabsgamma(x))[1]
 include("funs-ig.jl")
 include("gen-extract-data.jl")
 
