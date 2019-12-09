@@ -127,7 +127,7 @@ function sumψζ(ψ::AbstractArray, ζ::AbstractArray)
 end
 
 function log_q(α, N::Integer, sumval)
-    2*(N - 1)*(α*log(α) - lgamma(α)) + α*sumval
+    2*(N - 1)*(α*log(α) - logabsgamma(α)[1]) + α*sumval
 end
 
 function log_qtilde(lα, N::Integer, sumval, Π)
@@ -149,18 +149,25 @@ function updateα(α, ψ::AbstractArray, ζ::AbstractArray, τ, Π)
     end
 end
 
-# compute marginal likelihood for N=2..Nmax, here Nmax should be >=2
-function marginal_loglikelihood(Nmax::Integer, observations::AbstractVector,
-                       T0, T, n::Integer, αind, βind)
-    mll = zeros(Nmax-1)
-    for N in 2:Nmax
-        breaks = range(T0, stop=T, length=N+1)
-        Δ = diff(breaks)
-        H = counts(observations, breaks)
-        ltip = lgamma.(αind .+ H) .- (αind .+ H) .* log.(n*Δ .+ βind) # ltip = log terms in product
-        mll[N-1] = (T-T0)*n + αind*N*log(βind) - N*lgamma(αind) + sum(ltip)
-    end
-    2:Nmax, mll
+
+"""
+ compute marginal likelihood for N=2..Nmax, here Nmax should be >=2
+"""
+function marginal_loglikelihood(Nmax::Int64, observations,T0, T, n, α, β)
+  mll = [mloglikelihood(N, observations,T0, T, n, α, β) for N in 2:Nmax]
+  2:Nmax, mll
+end
+
+"""
+    Compute marginal likelihood for N segments (N+1 break points)
+"""
+function mloglikelihood(N::Int64, observations,T0, T, n, α, β)
+    breaks = range(T0,T,length=N+1)
+    Δ = diff(breaks)
+    H = counts(observations, breaks)
+    ltip = first.(logabsgamma.(α .+ H)) .- (α .+ H).*log.(n*Δ .+ β)  # ltip = log terms in product
+    out = T * n + α * N * log(β) -N *logabsgamma(α)[1] + sum(ltip)
+    out
 end
 
 function elpd_DIC(Nmax::Integer, observations::AbstractVector,
@@ -200,7 +207,7 @@ end
 Determine β by maximising the marginal likelihood, for fixed α and N.
 """
 function ebβ(α, H, Δ, n, N)
-    GG(α, H, Δ, n, N) = (lβ) -> -α*N*lβ[1] + N * lgamma(α) -  sum(lgamma.(α+H)) + sum((α+H).* log.(n*Δ+exp(lβ[1])))
+    GG(α, H, Δ, n, N) = (lβ) -> -α*N*lβ[1] + N * logabsgamma(α)[1] -  sum(first.(logabsgamma.(α+H))) + sum((α+H).* log.(n*Δ+exp(lβ[1])))
     result = optimize(GG(α, H, Δ, n, N), [0.0], BFGS())
     exp.(result.minimizer)[1]
 end
@@ -211,7 +218,7 @@ end
 Determine α by maximising the marginal likelihood, for fixed β and N.
 """
 function ebα(β, H, Δ, n, N)
-    GG(β, H, Δ, n, N) = (lα) -> -exp(lα[1])*N* log(β) + N * lgamma(exp(lα[1])) -  sum(lgamma.(exp(lα[1])+H)) + sum((exp(lα[1])+H).* log.(n*Δ+β))
+    GG(β, H, Δ, n, N) = (lα) -> -exp(lα[1])*N* log(β) + N * logabsgamma(exp(lα[1]))[1] -  sum(first.(logabsgamma.(exp(lα[1]) .+ H))) + sum((exp(lα[1]).+H).* log.(n*Δ+β))
     result = optimize(GG(β, H, Δ, n, N), [0.0], BFGS())
     exp.(result.minimizer)[1]
 end

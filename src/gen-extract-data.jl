@@ -3,7 +3,7 @@ function registerdatadeps()
     register(DataDep("mass-shooting", "", "https://www.dropbox.com/s/6zr083w4hbia4d0/years_passed.csv?dl=1"))
     register(DataDep("coal", "", "https://www.dropbox.com/s/uy6j8wru1nkqhw5/coal.csv?dl=1"))
 
-    
+
     register(DataDep("pptest", "", [
         "https://www.dropbox.com/s/kcqe58li0pevn3g/testdat_n1.csv?dl=1"
         "https://www.dropbox.com/s/hpcu0n4xdes2sbn/testdat_n5.csv?dl=1"
