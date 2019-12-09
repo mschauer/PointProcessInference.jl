@@ -134,8 +134,6 @@ uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 [[HTTP]]
 deps = ["Base64", "Dates", "IniFile", "MbedTLS", "Sockets"]
 git-tree-sha1 = "5c49dab19938b119fe204fd7d7e8e174f4e9c68b"
-repo-rev = "ox/headersafe"
-repo-url = "https://github.com/oxinabox/HTTP.jl.git"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 version = "0.8.8"
 
