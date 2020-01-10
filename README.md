@@ -1,5 +1,10 @@
 [![Build Status](https://travis-ci.org/mschauer/PointProcessInference.jl.svg?branch=master)](https://travis-ci.org/mschauer/PointProcessInference.jl)
 
+[pkgeval-img]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/P/PointProcessInference.svg
+[pkgeval-url]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html
+
+[![][pkgeval-img]][pkgeval-url]
+
 # PointProcessInference.jl
 Fast and scalable non-parametric Bayesian inference for Poisson point processes
 
