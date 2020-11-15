@@ -16,7 +16,7 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 DataDeps = "0.7"
-DataFrames = "0.19, 0.20, 0.21"
+DataFrames = "0.19, 0.20, 0.21, 0.22"
 Distributions = "0.21, 0.22, 0.23, 0.24"
 HTTP = "0.8, 0.9"
 Optim = "0.19, 0.20, 0.21, 0.22, 1.2"
